@@ -1,0 +1,151 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ------------------------------------------------------
+//                 ENUMS
+// ------------------------------------------------------
+
+enum AccountType {
+  BANCAIRE
+  EPARGNE
+  POCKET
+}
+
+enum TransactionType {
+  INTERNAL
+  EXTERNAL
+}
+
+enum TransactionStatus {
+  EN_ATTENTE
+  EFFECTUEE
+  ECHOUÉE
+}
+
+enum PaymentMethod {
+  CB_FISIQUE
+  CARTE_VIRTUELLE
+  APPLE_PAY
+  GOOGLE_PAY
+  SEPA
+}
+
+enum PaymentStatus {
+  EN_ATTENTE
+  EFFECTUE
+  REFUSE
+  REMBOURSE
+}
+
+// ------------------------------------------------------
+//                 MODELS
+// ------------------------------------------------------
+
+model User {
+  id            Int      @id @default(autoincrement())
+  firstname     String
+  lastname      String
+  email         String   @unique
+  dateNaissance DateTime
+  lieuNaissance String
+  adresse       String
+  password      String
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  accounts      Account[]
+  beneficiaries Beneficiaire[]
+  refreshTokens RefreshToken[]
+}
+
+model Account {
+  id        Int         @id @default(autoincrement())
+  type      AccountType
+  solde     Decimal     @db.Decimal(12, 2)
+  label     String
+  iban      String?     @unique
+  rib       String?     @unique
+  createdAt DateTime    @default(now())
+  userId    Int
+
+  user                    User          @relation(fields: [userId], references: [id])
+  transactionsSource      Transaction[] @relation("TransactionsSource")
+  transactionsDestination Transaction[] @relation("TransactionsDestination")
+  payments                Payment[]
+}
+
+model Beneficiaire {
+  id        Int      @id @default(autoincrement())
+  nom       String
+  iban      String
+  createdAt DateTime @default(now())
+  userId    Int
+
+  user         User          @relation(fields: [userId], references: [id])
+  transactions Transaction[]
+}
+
+model Payment {
+  id           Int      @id @default(autoincrement())
+  montant      Decimal  @db.Decimal(12, 2)
+  datePaiement DateTime @default(now())
+  description  String // ex: "Carrefour Market", "Amazon"
+  categorie    String? // ex: "Alimentation", "Shopping"
+
+  moyenPaiement PaymentMethod
+
+  statut PaymentStatus
+
+  createdAt DateTime @default(now())
+
+  // Le compte qui a été débité
+  accountId Int
+  account   Account @relation(fields: [accountId], references: [id])
+}
+
+model Transaction {
+  id              Int               @id @default(autoincrement())
+  montant         Decimal           @db.Decimal(12, 2)
+  dateTransaction DateTime          @default(now())
+  type            TransactionType
+  libelle         String
+  statut          TransactionStatus
+  createdAt       DateTime          @default(now())
+
+  // Relations internes (virements entre comptes)
+  compteSourceId      Int?
+  compteDestinationId Int?
+
+  // Virement externe
+  beneficiaireId Int?
+
+  compteSource      Account?      @relation("TransactionsSource", fields: [compteSourceId], references: [id])
+  compteDestination Account?      @relation("TransactionsDestination", fields: [compteDestinationId], references: [id])
+  beneficiaire      Beneficiaire? @relation(fields: [beneficiaireId], references: [id])
+}
+
+model RefreshToken {
+  id         Int       @id @default(autoincrement())
+  token      String    @unique
+  userId     Int
+  expireAt   DateTime
+  createdAt  DateTime  @default(now())
+  lastUsedAt DateTime  @default(now())
+  revokedAt  DateTime?
+  deviceInfo String?
+  ipAddress  String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
