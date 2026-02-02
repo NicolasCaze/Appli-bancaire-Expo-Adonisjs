@@ -1,25 +1,32 @@
+import { useAuth } from '@/contexts/AuthContext';
 import { FontAwesome6 } from '@expo/vector-icons';
 import { StyleSheet, Text, View } from "react-native";
+import { formatDate } from '@/utils/dateFormatter';
 
-type LastTransactionsProps = {
-    title: string;
-    date: string;
-    amount: string;
-}
 
-export default function LastTransactions({ title, date, amount }: LastTransactionsProps) {
+
+export default function LastPayments() {
+    const { payments } = useAuth()
+
+    
     return (
-        <View style={styles.container}>
-            <View style={styles.iconContainer}>
-                <FontAwesome6 name="cart-shopping" size={24} color="white" />
-            </View>
-            <View style={styles.textContainer}>
-                <Text style={styles.title}>{title}</Text>
-                <Text style={styles.date}>{date}</Text>
-            </View>
-            <Text style={styles.amount}>{amount}€</Text>
-        </View>
-    );
+        <>
+            {payments.slice(0, 3).map((payment) => (
+                <View style={styles.container} key={payment.id}>
+                    <View style={styles.iconContainer}>
+                        <FontAwesome6 name="cart-shopping" size={24} color="white" />
+                    </View>
+                    
+                    <View style={styles.textContainer}>
+                        <Text style={styles.title}>{payment.description}</Text>
+                        <Text style={styles.date}>{formatDate(payment.datePaiement)}</Text>
+                    </View>
+                    
+                    <Text style={styles.amount}>{payment.montant}€</Text>
+                </View>
+            ))}
+        </>
+    )
 }
 
 const styles = StyleSheet.create({

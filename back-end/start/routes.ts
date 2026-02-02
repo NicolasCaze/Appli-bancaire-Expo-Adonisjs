@@ -16,9 +16,15 @@ router.get('/', async () => {
 
 import UsersController from '../app/controllers/users_controller.js'
 import AuthController from '../app/controllers/auth_controller.js'
+import AccountsController from '#controllers/accounts_controller'
 import { middleware } from './kernel.js'
+import PaymentsController from '#controllers/payments_controller'
+import TransactionsController from '#controllers/transactions_controller'
 
 router.get('/users', [UsersController, 'index']).use(middleware.auth())
+router.get('/accounts', [AccountsController, 'getMyAccount']).use(middleware.auth())
+router.get('/payments', [PaymentsController, 'getMyPayments']).use(middleware.auth())
+router.get('/transactions', [TransactionsController, 'getMyTransaction']).use(middleware.auth())
 router.post('/create_users', [UsersController, 'createUsers'])
 // Routes d'authentification
 router.post('/auth/login', [AuthController, 'login'])

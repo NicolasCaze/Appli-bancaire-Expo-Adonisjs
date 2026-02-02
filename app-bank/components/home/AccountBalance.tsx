@@ -1,15 +1,19 @@
 import { StyleSheet, Text, View } from "react-native";
+import { useAuth } from '@/contexts/AuthContext'
 
 type AccountBalanceProps = {
     title   : string;
-    balance : string;
 }
 
-export default function AccountBalance({ title, balance }: AccountBalanceProps) {
+export default function AccountBalance({ title }: AccountBalanceProps) {
+    const { accounts } = useAuth()
+
+    const mainAccount= accounts.find(account => account.type == 'BANCAIRE')
+    const solde = mainAccount ? mainAccount.solde : 0
     return (
         <View style={styles.container}>
             <Text style={styles.title}>{title}</Text>
-            <Text style={styles.balance}>{balance}€</Text>
+            <Text style={styles.balance}>{solde}€</Text>
         </View>
     );
 }

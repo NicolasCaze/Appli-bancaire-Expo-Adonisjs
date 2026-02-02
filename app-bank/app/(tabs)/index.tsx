@@ -4,14 +4,22 @@ import Button from '@/components/home/Button';
 import ButtonDepense from '@/components/home/ButtonDepense';
 import ButtonPlus from '@/components/home/ButtonPlus';
 import DepenseGraphique from '@/components/home/DepenseGraphique';
-import LastTransactions from '@/components/home/LastTransactions';
+import LastPayments from '@/components/home/LastPayments';
 import NavBarHome from '@/components/home/NavBarHome';
 import Patrimoine from '@/components/home/Patrimoine';
 import { Colors } from '@/constants/Colors';
 import { LinearGradient } from 'expo-linear-gradient';
-import { ScrollView, StyleSheet, Text, View } from 'react-native';
+import { ScrollView, StyleSheet, Text, View, TouchableOpacity, Alert } from 'react-native';
+import { router } from 'expo-router';
+import AuthService from '@/services/authService';
+import { useEffect } from 'react';
+import SecureStorage from '@/services/secureStorage';
+import { useAuth } from '@/contexts/AuthContext'
 
 export default function HomeScreen() {
+  const { user, logout, accounts } = useAuth()
+
+ 
 
   return (
     <LinearGradient
@@ -26,7 +34,16 @@ export default function HomeScreen() {
           contentInsetAdjustmentBehavior="automatic"
         >
           <NavBarHome  />
-        <AccountBalance title="Principal" balance="4500" />
+          
+          {/* Bouton de déconnexion */}
+          <TouchableOpacity 
+            style={styles.logoutButton}
+            onPress={logout}
+          >
+            <Text style={styles.logoutText}>🚪 Déconnexion</Text>
+          </TouchableOpacity>
+
+        <AccountBalance title="Principal" />
         
         <View style={styles.container}>
           <View style={styles.containerbutton}>
@@ -62,8 +79,7 @@ export default function HomeScreen() {
         <Text style={styles.transactionsTitle}>
           Dernières transactions
         </Text>
-        <LastTransactions title="Virement" date="2022-01-01" amount="100" />
-        <LastTransactions title="Virement" date="2022-01-01" amount="100" />
+        <LastPayments />
         <ButtonDepense
           onPress={() => console.log('Voir plus')}
           label="Voir plus"
@@ -100,6 +116,20 @@ const styles = StyleSheet.create({
   },
   button: {
     alignItems: 'center'
+  },
+  logoutButton: {
+    backgroundColor: 'rgba(255, 255, 255, 0.2)',
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 8,
+    marginTop: 15,
+    marginHorizontal: 20,
+    alignSelf: 'flex-end'
+  },
+  logoutText: {
+    color: 'white',
+    fontSize: 14,
+    fontWeight: '600'
   },
   transactionsTitle: {
     color: 'white',

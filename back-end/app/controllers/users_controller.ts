@@ -1,5 +1,5 @@
 import type { HttpContext } from '@adonisjs/core/http'
-import { UsersService } from '../service/users_Service.js'
+import { UsersService } from '../service/users_service.js'
 import { createUserValidator } from '../validators/auth_validator.js'
 
 type Users = {
@@ -46,7 +46,7 @@ export default class UsersController {
                     message: 'Données invalides',
                     errors: error.messages
                 })
-            }
+            } 
             console.error('Erreur lors de la création:', error)
             return response.status(500).json({
                 message: 'Erreur lors de la création de l\'utilisateur',
@@ -55,4 +55,5 @@ export default class UsersController {
         }
     }
 
+    
 }
