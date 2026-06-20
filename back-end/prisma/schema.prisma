@@ -49,6 +49,19 @@ enum PaymentStatus {
   REMBOURSE
 }
 
+enum Frequence {
+  UNIQUE
+  QUOTIDIEN
+  HEBDOMADAIRE
+  MENSUEL
+}
+
+enum VirementProgrammeStatut {
+  ACTIF
+  SUSPENDU
+  TERMINE
+}
+
 // ------------------------------------------------------
 //                 MODELS
 // ------------------------------------------------------
@@ -80,10 +93,11 @@ model Account {
   createdAt DateTime    @default(now())
   userId    Int
 
-  user                    User          @relation(fields: [userId], references: [id])
-  transactionsSource      Transaction[] @relation("TransactionsSource")
-  transactionsDestination Transaction[] @relation("TransactionsDestination")
+  user                    User                @relation(fields: [userId], references: [id])
+  transactionsSource      Transaction[]       @relation("TransactionsSource")
+  transactionsDestination Transaction[]       @relation("TransactionsDestination")
   payments                Payment[]
+  virementsProgrammes     VirementProgramme[]
 }
 
 model Beneficiaire {
@@ -93,8 +107,9 @@ model Beneficiaire {
   createdAt DateTime @default(now())
   userId    Int
 
-  user         User          @relation(fields: [userId], references: [id])
-  transactions Transaction[]
+  user                User                @relation(fields: [userId], references: [id])
+  transactions        Transaction[]
+  virementsProgrammes VirementProgramme[]
 }
 
 model Payment {
@@ -134,6 +149,23 @@ model Transaction {
   compteSource      Account?      @relation("TransactionsSource", fields: [compteSourceId], references: [id])
   compteDestination Account?      @relation("TransactionsDestination", fields: [compteDestinationId], references: [id])
   beneficiaire      Beneficiaire? @relation(fields: [beneficiaireId], references: [id])
+}
+
+model VirementProgramme {
+  id                     Int                     @id @default(autoincrement())
+  montant                Decimal                 @db.Decimal(12, 2)
+  libelle                String
+  frequence              Frequence
+  statut                 VirementProgrammeStatut @default(ACTIF)
+  dateProchaineExecution DateTime
+  dateFin                DateTime?
+  createdAt              DateTime                @default(now())
+
+  compteSourceId Int
+  beneficiaireId Int
+
+  compteSource Account      @relation(fields: [compteSourceId], references: [id])
+  beneficiaire Beneficiaire @relation(fields: [beneficiaireId], references: [id])
 }
 
 model RefreshToken {
