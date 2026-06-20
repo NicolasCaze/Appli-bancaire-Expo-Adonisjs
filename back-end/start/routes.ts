@@ -25,6 +25,7 @@ router.get('/users', [UsersController, 'index']).use(middleware.auth())
 router.get('/accounts', [AccountsController, 'getMyAccount']).use(middleware.auth())
 router.get('/payments', [PaymentsController, 'getMyPayments']).use(middleware.auth())
 router.get('/transactions', [TransactionsController, 'getMyTransaction']).use(middleware.auth())
+router.post('/transactions/create', [TransactionsController, 'createTransaction']).use(middleware.auth())
 router.post('/create_users', [UsersController, 'createUsers'])
 // Routes d'authentification
 router.post('/auth/login', [AuthController, 'login'])

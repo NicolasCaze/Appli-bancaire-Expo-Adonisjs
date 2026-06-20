@@ -3,11 +3,11 @@ import { transactionsService } from '../service/transaction_service.js'
 
 export default class TransactionsController {
         public transactionsService = new transactionsService()
-    
+
         constructor () {
             this.transactionsService = new transactionsService()
         }
-    
+
         public async getMyTransaction(ctx: HttpContext) {
       try {
       const user = ctx.user
@@ -25,4 +25,39 @@ export default class TransactionsController {
         })
     }
     }
+
+    public async createTransaction(ctx: HttpContext) {
+        try {
+            const user = ctx.user
+            if (!user) {
+                return ctx.response.status(401).json({
+                    message: 'Utilisateur non authentifié'
+                })
+            }
+
+            const { compteSourceId, compteDestinationId, montant, libelle } = ctx.request.body()
+
+            const transaction = await this.transactionsService.createTransactionService(
+                user.userId,
+                compteSourceId,
+                compteDestinationId,
+                montant,
+                libelle ?? 'Virement'
+            )
+
+            return ctx.response.status(201).json(transaction)
+        } catch (error: any) {
+            const knownErrors = ['introuvable', 'autorisé', 'insuffisant', 'différents', 'positif']
+            if (knownErrors.some((msg) => error.message?.includes(msg))) {
+                return ctx.response.status(400).json({
+                    message: error.message
+                })
+            }
+
+            console.error(error)
+            return ctx.response.status(500).json({
+                message: 'Erreur lors de la création de la transaction'
+            })
+        }
+}
 }
