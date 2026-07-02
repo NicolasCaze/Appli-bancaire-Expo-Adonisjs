@@ -1,5 +1,6 @@
 import type { HttpContext } from '@adonisjs/core/http'
 import { transactionsService } from '../service/transaction_service.js'
+import { createTransactionValidator, createVirementBeneficiaireValidator } from '../validators/transactions_validator.js'
 
 export default class TransactionsController {
         public transactionsService = new transactionsService()
@@ -35,18 +36,24 @@ export default class TransactionsController {
                 })
             }
 
-            const { compteSourceId, compteDestinationId, montant, libelle } = ctx.request.body()
+            const payload = await ctx.request.validateUsing(createTransactionValidator)
 
             const transaction = await this.transactionsService.createTransactionService(
                 user.userId,
-                compteSourceId,
-                compteDestinationId,
-                montant,
-                libelle ?? 'Virement'
+                payload.compteSourceId,
+                payload.compteDestinationId,
+                payload.montant,
+                payload.libelle ?? 'Virement'
             )
 
             return ctx.response.status(201).json(transaction)
         } catch (error: any) {
+            if (error.messages) {
+                return ctx.response.status(422).json({
+                    message: 'Données invalides',
+                    errors: error.messages
+                })
+            }
             const knownErrors = ['introuvable', 'autorisé', 'insuffisant', 'différents', 'positif', 'bancaire']
             if (knownErrors.some((msg) => error.message?.includes(msg))) {
                 return ctx.response.status(400).json({
@@ -70,18 +77,24 @@ export default class TransactionsController {
                 })
             }
 
-            const { compteSourceId, beneficiaireId, montant, libelle } = ctx.request.body()
+            const payload = await ctx.request.validateUsing(createVirementBeneficiaireValidator)
 
             const transaction = await this.transactionsService.createVirementBeneficiaireService(
                 user.userId,
-                compteSourceId,
-                beneficiaireId,
-                montant,
-                libelle ?? 'Virement'
+                payload.compteSourceId,
+                payload.beneficiaireId,
+                payload.montant,
+                payload.libelle ?? 'Virement'
             )
 
             return ctx.response.status(201).json(transaction)
         } catch (error: any) {
+            if (error.messages) {
+                return ctx.response.status(422).json({
+                    message: 'Données invalides',
+                    errors: error.messages
+                })
+            }
             const knownErrors = ['introuvable', 'autorisé', 'insuffisant', 'positif', 'appartient', 'bancaire']
             if (knownErrors.some((msg) => error.message?.includes(msg))) {
                 return ctx.response.status(400).json({

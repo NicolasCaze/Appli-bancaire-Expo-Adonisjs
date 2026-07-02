@@ -2,16 +2,6 @@ import type { HttpContext } from '@adonisjs/core/http'
 import { UsersService } from '../service/users_service.js'
 import { createUserValidator } from '../validators/auth_validator.js'
 
-type Users = {
-    firstname : string,
-    lastname: string,
-    email: string,
-    dateNaissance: Date,
-    lieuNaissance: string,
-    adresse: string,
-    password: string
-}
-
 export default class UsersController {
     private usersService: UsersService
 

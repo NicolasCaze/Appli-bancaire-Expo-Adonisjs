@@ -38,6 +38,6 @@ router.post('/virements-programmes/create', [VirementsProgrammesController, 'cre
 router.delete('/virements-programmes/:id', [VirementsProgrammesController, 'annulerVirementProgramme']).use(middleware.auth())
 router.post('/create_users', [UsersController, 'createUsers'])
 // Routes d'authentification
-router.post('/auth/login', [AuthController, 'login'])
+router.post('/auth/login', [AuthController, 'login']).use(middleware.rateLimit())
 router.post('/auth/refresh', [AuthController, 'refresh'])
 router.post('/auth/logout', [AuthController, 'logout'])

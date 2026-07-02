@@ -1,5 +1,6 @@
 import type { HttpContext } from '@adonisjs/core/http'
 import { virementsProgrammesService } from '../service/virement_programme_service.js'
+import { createVirementProgrammeValidator } from '../validators/virements_programmes_validator.js'
 
 export default class VirementsProgrammesController {
     public virementsProgrammesService = new virementsProgrammesService()
@@ -35,21 +36,27 @@ export default class VirementsProgrammesController {
                 })
             }
 
-            const { compteSourceId, beneficiaireId, montant, libelle, frequence, dateProchaineExecution, dateFin } = ctx.request.body()
+            const payload = await ctx.request.validateUsing(createVirementProgrammeValidator)
 
             const virementProgramme = await this.virementsProgrammesService.createVirementProgrammeService(
                 user.userId,
-                compteSourceId,
-                beneficiaireId,
-                montant,
-                libelle,
-                frequence,
-                new Date(dateProchaineExecution),
-                dateFin ? new Date(dateFin) : null
+                payload.compteSourceId,
+                payload.beneficiaireId,
+                payload.montant,
+                payload.libelle ?? 'Virement programmé',
+                payload.frequence,
+                new Date(payload.dateProchaineExecution),
+                payload.dateFin ? new Date(payload.dateFin) : null
             )
 
             return ctx.response.status(201).json(virementProgramme)
         } catch (error: any) {
+            if (error.messages) {
+                return ctx.response.status(422).json({
+                    message: 'Données invalides',
+                    errors: error.messages
+                })
+            }
             const knownErrors = ['introuvable', 'autorisé', 'appartient', 'positif', 'futur', 'fin', 'bancaire']
             if (knownErrors.some((msg) => error.message?.includes(msg))) {
                 return ctx.response.status(400).json({

@@ -1,5 +1,6 @@
 import type { HttpContext } from '@adonisjs/core/http'
 import { beneficiairesService } from '../service/beneficiaire_service.js'
+import { createBeneficiaireValidator } from '../validators/beneficiaires_validator.js'
 
 export default class BeneficiairesController {
     public beneficiairesService = new beneficiairesService()
@@ -35,10 +36,16 @@ export default class BeneficiairesController {
                 })
             }
 
-            const { nom, iban } = ctx.request.body()
-            const beneficiaire = await this.beneficiairesService.createBeneficiaireService(user.userId, nom, iban)
+            const payload = await ctx.request.validateUsing(createBeneficiaireValidator)
+            const beneficiaire = await this.beneficiairesService.createBeneficiaireService(user.userId, payload.nom, payload.iban)
             return ctx.response.status(201).json(beneficiaire)
         } catch (error: any) {
+            if (error.messages) {
+                return ctx.response.status(422).json({
+                    message: 'Données invalides',
+                    errors: error.messages
+                })
+            }
             const knownErrors = ['requis', 'existe déjà']
             if (knownErrors.some((msg) => error.message?.includes(msg))) {
                 return ctx.response.status(400).json({
