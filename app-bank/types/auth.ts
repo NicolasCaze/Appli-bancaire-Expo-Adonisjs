@@ -41,6 +41,28 @@ export interface Transaction {
   beneficiaireId: number | null
 }
 
+export interface Beneficiaire {
+  id: number
+  nom: string
+  iban: string
+  userId: number
+}
+
+export type Frequence = 'UNIQUE' | 'QUOTIDIEN' | 'HEBDOMADAIRE' | 'MENSUEL'
+
+export interface VirementProgramme {
+  id: number
+  montant: number
+  libelle: string
+  frequence: Frequence
+  statut: 'ACTIF' | 'SUSPENDU' | 'TERMINE'
+  dateProchaineExecution: string
+  dateFin: string | null
+  compteSourceId: number
+  beneficiaireId: number
+  beneficiaire?: Beneficiaire
+}
+
 export interface LoginResponse {
   user: User
   tokens: {

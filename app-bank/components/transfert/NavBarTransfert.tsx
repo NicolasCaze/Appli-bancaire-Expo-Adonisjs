@@ -1,21 +1,22 @@
 import { Ionicons } from '@expo/vector-icons';
 import { StyleSheet, TouchableOpacity, View } from "react-native";
+import { router } from 'expo-router';
 
 
 export default function NavBarTransfert() {
     return (
         <View style={styles.container}>
             <View style={styles.leftContainer}>
-                <TouchableOpacity style={styles.iconContainer}>
+                <TouchableOpacity style={styles.iconContainer} onPress={() => router.push('/beneficiaires')}>
                     <Ionicons name="person" size={24} color="white" />
                 </TouchableOpacity>
             </View>
-            
+
             <View style={styles.rightContainer}>
-                <TouchableOpacity style={[styles.iconContainer, styles.marginRight]}>
+                <TouchableOpacity style={[styles.iconContainer, styles.marginRight]} onPress={() => router.push('/virements-programmes')}>
                     <Ionicons name="calendar-clear" size={24} color="white" />
                 </TouchableOpacity>
-                <TouchableOpacity style={styles.iconContainer}>
+                <TouchableOpacity style={styles.iconContainer} onPress={() => router.push('/transfer-beneficiaire')}>
                     <Ionicons name="add" size={24} color="white" />
                 </TouchableOpacity>
             </View>

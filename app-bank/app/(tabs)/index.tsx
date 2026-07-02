@@ -2,37 +2,38 @@
 import AccountBalance from '@/components/home/AccountBalance';
 import Button from '@/components/home/Button';
 import ButtonDepense from '@/components/home/ButtonDepense';
-import ButtonPlus from '@/components/home/ButtonPlus';
 import DepenseGraphique from '@/components/home/DepenseGraphique';
 import LastPayments from '@/components/home/LastPayments';
 import NavBarHome from '@/components/home/NavBarHome';
 import Patrimoine from '@/components/home/Patrimoine';
 import { Colors } from '@/constants/Colors';
 import { LinearGradient } from 'expo-linear-gradient';
-import { ScrollView, StyleSheet, Text, View, TouchableOpacity, Alert } from 'react-native';
-import { router } from 'expo-router';
-import AuthService from '@/services/authService';
-import { useEffect } from 'react';
-import SecureStorage from '@/services/secureStorage';
+import { ScrollView, StyleSheet, Text, View, TouchableOpacity, SafeAreaView } from 'react-native';
 import { useAuth } from '@/contexts/AuthContext'
+import PagerView from 'react-native-pager-view'
+import AccountPage from '@/components/home/AccountPage';
+import CreateAccountPage from '@/components/home/CreateAccountPage';
+import { useState } from 'react';
 
 export default function HomeScreen() {
-  const { user, logout, accounts } = useAuth()
+  const { user, logout, accounts, loadAccounts } = useAuth()
+  const [currentPage, setCurrentPage] = useState(0)
 
- 
+  const compteBancaire = accounts.find(account => account.type === 'BANCAIRE')
+  const epargne = accounts.find(account => account.type === 'EPARGNE')
+  const pocket = accounts.find(account => account.type === 'POCKET')
+
+  const handleCreateAccount = async () => {
+    await loadAccounts()
+  }
 
   return (
     <LinearGradient
       colors={[Colors.gradient.start, Colors.gradient.middle, Colors.gradient.end]}
       style={{ flex: 1 }}
     >
-      <View style={styles.bodyhome}>
-        <ScrollView 
-          style={{ width: '100%', flex: 1 }}
-          contentContainerStyle={styles.scrollContent}
-          showsVerticalScrollIndicator={false}
-          contentInsetAdjustmentBehavior="automatic"
-        >
+      <SafeAreaView style={styles.bodyhome}>
+        <View style={styles.header}>
           <NavBarHome  />
           
           {/* Bouton de déconnexion */}
@@ -42,59 +43,40 @@ export default function HomeScreen() {
           >
             <Text style={styles.logoutText}>🚪 Déconnexion</Text>
           </TouchableOpacity>
+        </View>
 
-        <AccountBalance title="Principal" />
-        
-        <View style={styles.container}>
-          <View style={styles.containerbutton}>
-            <View style={styles.button}>
-              <Button 
-                onPress={() => console.log('Ajouter')} 
-                iconName="plus"
-                size={24}
-                color="#fff"
-              />
-              <Text style={{ color: 'white', fontSize: 12, marginTop: 8 }}>Ajouter</Text>
-            </View>
-            <View style={styles.button}>
-              <Button 
-                onPress={() => console.log('Information')} 
-                iconName="house-chimney"
-                size={24}
-                color="#fff"
-              />
-              <Text style={{ color: 'white', fontSize: 12, marginTop: 8 }}>Information</Text>
-            </View>
-            <View style={styles.button}>
-              <ButtonPlus 
-                onPress={() => console.log('Plus')} 
-                iconName="dots-horizontal"
-                size={24}
-                color="#fff"
-              />
-              <Text style={{ color: 'white', fontSize: 12, marginTop: 8 }}>Plus</Text>
-            </View>
+        <PagerView 
+          style={styles.pagerView}
+          onPageSelected={(e) => setCurrentPage(e.nativeEvent.position)}
+        >
+          {/* Page 1 : Compte Bancaire */}
+          <View key="bancaire" style={styles.page}>
+            {compteBancaire ? (
+              <AccountPage accountId={compteBancaire.id} currentPage={currentPage} pageIndex={0} />
+            ) : (
+              <CreateAccountPage accountType="BANCAIRE" currentPage={currentPage} pageIndex={0} />
+            )}
           </View>
-        </View>
-        <Text style={styles.transactionsTitle}>
-          Dernières transactions
-        </Text>
-        <LastPayments />
-        <ButtonDepense
-          onPress={() => console.log('Voir plus')}
-          label="Voir plus"
-        />
-        <View style={styles.containerPatrimoine}>
-        <Patrimoine />
-        </View>
-        <Text style={styles.transactionsTitle}>
-          Dépense du mois
-        </Text>
-        <View style={styles.containergraphique}>
-        <DepenseGraphique />
-        </View>
-        </ScrollView>
-      </View>
+
+          {/* Page 2 : Épargne */}
+          <View key="epargne" style={styles.page}>
+            {epargne ? (
+              <AccountPage accountId={epargne.id} currentPage={currentPage} pageIndex={1} />
+            ) : (
+              <CreateAccountPage accountType="EPARGNE" currentPage={currentPage} pageIndex={1} />
+            )}
+          </View>
+
+          {/* Page 3 : Pocket */}
+          <View key="pocket" style={styles.page}>
+            {pocket ? (
+              <AccountPage accountId={pocket.id} currentPage={currentPage} pageIndex={2} />
+            ) : (
+              <CreateAccountPage accountType="POCKET" currentPage={currentPage} pageIndex={2} />
+            )}
+          </View>
+        </PagerView>
+      </SafeAreaView>
     </LinearGradient>
   );
 }
@@ -102,8 +84,19 @@ export default function HomeScreen() {
 const styles = StyleSheet.create({
     bodyhome: {
         flex: 1,
+    },
+    header: {
+        width: '100%',
         alignItems: 'center',
-        paddingBottom: 80, // Plus d'espace en bas pour la barre de navigation
+        paddingTop: 10,
+    },
+    pagerView: {
+        flex: 1,
+        width: '100%',
+    },
+    page: {
+        flex: 1,
+        width: '100%',
     },
     scrollContent: {
         paddingBottom: 40,
@@ -115,7 +108,7 @@ const styles = StyleSheet.create({
  flexDirection: 'row', justifyContent: 'center', gap: 50 
   },
   button: {
-    alignItems: 'center'
+    alignItems: 'center',
   },
   logoutButton: {
     backgroundColor: 'rgba(255, 255, 255, 0.2)',

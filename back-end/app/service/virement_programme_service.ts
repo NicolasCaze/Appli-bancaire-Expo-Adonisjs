@@ -50,6 +50,9 @@ export class virementsProgrammesService {
         if (compteSource.userId !== userId) {
             throw new Error("Vous n'êtes pas autorisé à programmer un virement depuis ce compte")
         }
+        if (compteSource.type !== 'BANCAIRE') {
+            throw new Error('Seul le compte bancaire peut servir de compte source pour un virement programmé')
+        }
 
         const beneficiaire = await prisma.beneficiaire.findUnique({
             where: { id: beneficiaireId }

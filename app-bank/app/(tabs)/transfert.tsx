@@ -3,8 +3,10 @@ import NavBarTransfert from '@/components/transfert/NavBarTransfert';
 import { Colors } from '@/constants/Colors';
 import { LinearGradient } from "expo-linear-gradient";
 import { StyleSheet, View } from "react-native";
+import { useAuth } from '@/contexts/AuthContext';
 
 export default function TransfertScreen() {
+  const { transactions } = useAuth();
     return (
             <LinearGradient
               colors={[Colors.gradient.start, Colors.gradient.middle, Colors.gradient.end]}

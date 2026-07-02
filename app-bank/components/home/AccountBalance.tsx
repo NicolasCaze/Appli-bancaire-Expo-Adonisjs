@@ -2,20 +2,34 @@ import { StyleSheet, Text, View } from "react-native";
 import { useAuth } from '@/contexts/AuthContext'
 
 type AccountBalanceProps = {
-    title   : string;
+    accountId?: number
 }
 
-export default function AccountBalance({ title }: AccountBalanceProps) {
-    const { accounts } = useAuth()
+const getAccountTitle = (type?: string) => {
+    switch(type) {
+        case 'BANCAIRE': return 'Compte Principal'
+        case 'EPARGNE': return 'Compte Épargne'
+        case 'POCKET': return 'Pocket'
+        default: return 'Compte'
+    }
+}
 
-    const mainAccount= accounts.find(account => account.type == 'BANCAIRE')
-    const solde = mainAccount ? mainAccount.solde : 0
+export default function AccountBalance({ accountId }: AccountBalanceProps) {
+    const { accounts } = useAuth()
+    
+    const account = accountId 
+        ? accounts.find(acc => acc.id === accountId)
+        : accounts.find(acc => acc.type === 'BANCAIRE')
+    
+    const solde = account ? account.solde : 0
+    const title = getAccountTitle(account?.type)
+    
     return (
         <View style={styles.container}>
             <Text style={styles.title}>{title}</Text>
             <Text style={styles.balance}>{solde}€</Text>
         </View>
-    );
+    )
 }
 
 const styles = StyleSheet.create({

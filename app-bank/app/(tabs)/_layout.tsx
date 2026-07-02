@@ -1,24 +1,36 @@
 import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { Tabs } from "expo-router";
+import { Colors } from '@/constants/Colors';
 
 export default function TabLayout() {
   return (
     <Tabs screenOptions={{
-      tabBarActiveTintColor: '#fff',
-      tabBarInactiveTintColor: 'rgba(255, 255, 255, 0.6)',
+      tabBarActiveTintColor: Colors.primary,
+      tabBarInactiveTintColor: '#8E8E93',
       headerStyle: {
-        backgroundColor: 'transparent', // Transparent pour voir le gradient
+        backgroundColor: 'transparent',
       },
       headerShadowVisible: false,
       headerTintColor: '#fff',
       tabBarStyle: {
-        backgroundColor: 'transparent', // Transparent
-        borderTopWidth: 0,
-        position: 'absolute', // Important pour le rendre au-dessus du gradient
-        elevation: 0,
+        backgroundColor: 'rgba(255, 255, 255, 0.85)',
+        borderTopWidth: 1,
+        borderTopColor: '#E5E5EA',
+        position: 'absolute',
+        elevation: 8,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: -2 },
+        shadowOpacity: 0.1,
+        shadowRadius: 8,
+        paddingBottom: 8,
+        paddingTop: 8,
+        height: 65,
       },
-      headerTransparent: true, // Rend le header transparent
+      tabBarItemStyle: {
+        paddingVertical: 4,
+      },
+      headerTransparent: true,
     }}>
       <Tabs.Screen 
         name="index"

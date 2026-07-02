@@ -1,14 +1,14 @@
 import type { HttpContext } from '@adonisjs/core/http'
-import { virementsProgrammesService } from '../service/virement_programme_service.js'
+import { beneficiairesService } from '../service/beneficiaire_service.js'
 
-export default class VirementsProgrammesController {
-    public virementsProgrammesService = new virementsProgrammesService()
+export default class BeneficiairesController {
+    public beneficiairesService = new beneficiairesService()
 
     constructor() {
-        this.virementsProgrammesService = new virementsProgrammesService()
+        this.beneficiairesService = new beneficiairesService()
     }
 
-    public async getMyVirementsProgrammes(ctx: HttpContext) {
+    public async getMyBeneficiaires(ctx: HttpContext) {
         try {
             const user = ctx.user
             if (!user) {
@@ -16,17 +16,17 @@ export default class VirementsProgrammesController {
                     message: 'Utilisateur non authentifié'
                 })
             }
-            const data = await this.virementsProgrammesService.getMyVirementsProgrammesService(user.userId)
+            const data = await this.beneficiairesService.getMyBeneficiairesService(user.userId)
             return ctx.response.status(200).json(data)
         } catch (error) {
             console.error(error)
             return ctx.response.status(500).json({
-                message: 'Erreur lors de la récupération des virements programmés'
+                message: 'Erreur lors de la récupération des bénéficiaires'
             })
         }
     }
 
-    public async createVirementProgramme(ctx: HttpContext) {
+    public async createBeneficiaire(ctx: HttpContext) {
         try {
             const user = ctx.user
             if (!user) {
@@ -35,22 +35,11 @@ export default class VirementsProgrammesController {
                 })
             }
 
-            const { compteSourceId, beneficiaireId, montant, libelle, frequence, dateProchaineExecution, dateFin } = ctx.request.body()
-
-            const virementProgramme = await this.virementsProgrammesService.createVirementProgrammeService(
-                user.userId,
-                compteSourceId,
-                beneficiaireId,
-                montant,
-                libelle,
-                frequence,
-                new Date(dateProchaineExecution),
-                dateFin ? new Date(dateFin) : null
-            )
-
-            return ctx.response.status(201).json(virementProgramme)
+            const { nom, iban } = ctx.request.body()
+            const beneficiaire = await this.beneficiairesService.createBeneficiaireService(user.userId, nom, iban)
+            return ctx.response.status(201).json(beneficiaire)
         } catch (error: any) {
-            const knownErrors = ['introuvable', 'autorisé', 'appartient', 'positif', 'futur', 'fin', 'bancaire']
+            const knownErrors = ['requis', 'existe déjà']
             if (knownErrors.some((msg) => error.message?.includes(msg))) {
                 return ctx.response.status(400).json({
                     message: error.message
@@ -59,12 +48,12 @@ export default class VirementsProgrammesController {
 
             console.error(error)
             return ctx.response.status(500).json({
-                message: 'Erreur lors de la création du virement programmé'
+                message: 'Erreur lors de la création du bénéficiaire'
             })
         }
     }
 
-    public async annulerVirementProgramme(ctx: HttpContext) {
+    public async deleteBeneficiaire(ctx: HttpContext) {
         try {
             const user = ctx.user
             if (!user) {
@@ -73,10 +62,10 @@ export default class VirementsProgrammesController {
                 })
             }
 
-            const virementProgrammeId = Number(ctx.request.param('id'))
-            await this.virementsProgrammesService.annulerVirementProgrammeService(user.userId, virementProgrammeId)
+            const beneficiaireId = Number(ctx.request.param('id'))
+            await this.beneficiairesService.deleteBeneficiaireService(user.userId, beneficiaireId)
             return ctx.response.status(200).json({
-                message: 'Virement programmé annulé'
+                message: 'Bénéficiaire supprimé'
             })
         } catch (error: any) {
             const knownErrors = ['introuvable', 'autorisé']
@@ -88,7 +77,7 @@ export default class VirementsProgrammesController {
 
             console.error(error)
             return ctx.response.status(500).json({
-                message: "Erreur lors de l'annulation du virement programmé"
+                message: 'Erreur lors de la suppression du bénéficiaire'
             })
         }
     }

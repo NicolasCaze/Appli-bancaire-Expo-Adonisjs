@@ -1,95 +1,68 @@
 import React from 'react';
 import { Dimensions, FlatList, StyleSheet, Text, View } from "react-native";
 import { ScrollView } from 'react-native-gesture-handler';
+import { useAuth } from '@/contexts/AuthContext';
+import { Account, Beneficiaire, Transaction } from '@/types/auth';
+import { formatDate } from '@/utils/dateFormatter';
 
-type Transaction = {
-    id: string;
-    name: string;
-    initial: string;
-    avatarColor: string;
-    message: string;
-    amount: string;
-    timestamp: string;
-};
+const getAccountLabel = (type?: string) => {
+    if (type === 'BANCAIRE') return 'Compte Bancaire'
+    if (type === 'EPARGNE') return 'Compte Épargne'
+    if (type === 'POCKET') return 'Pocket'
+    return 'Compte'
+}
 
-// Données mockup pour démonstration
-const transactions: Transaction[] = [
-    {
-        id: '1',
-        name: 'Alexis',
-        initial: 'A',
-        avatarColor: '#f06292', // Rose
-        message: 'Vous avez envoyé',
-        amount: '6 €',
-        timestamp: 'mar.'
-    },
-    {
-        id: '2',
-        name: 'Paul',
-        initial: 'P',
-        avatarColor: '#4fc3f7', // Bleu clair
-        message: 'Vous avez envoyé',
-        amount: '3,00 €',
-        timestamp: '17h'
-    },
-    {
-        id: '3',
-        name: 'Flavia',
-        initial: 'F',
-        avatarColor: '#81c784', // Vert clair
-        message: 'Dès que j\'ai ma carte je te fais',
-        amount: '',
-        timestamp: '17h'
-    },
-    {
-        id: '4',
-        name: 'Stefan',
-        initial: 'S',
-        avatarColor: '#ff8a65', // Orange
-        message: 'Vous avez envoyé',
-        amount: '0,92 €',
-        timestamp: '16h'
-    },
-    {
-        id: '5',
-        name: 'EXUBERAFAQ, UNIPES',
-        initial: 'E',
-        avatarColor: '#e57373', // Rouge clair
-        message: 'Vous avez envoyé',
-        amount: '52 €',
-        timestamp: '25 avr'
-    },
-];
+function getDestinataire(transaction: Transaction, accounts: Account[], beneficiaires: Beneficiaire[]): string {
+    if (transaction.beneficiaireId) {
+        const beneficiaire = beneficiaires.find((b) => b.id === transaction.beneficiaireId)
+        return beneficiaire?.nom ?? 'Bénéficiaire'
+    }
+    if (transaction.compteDestinationId) {
+        const compteDestination = accounts.find((a) => a.id === transaction.compteDestinationId)
+        return getAccountLabel(compteDestination?.type)
+    }
+    return 'Compte'
+}
 
-const TransactionItem = ({ item }: { item: Transaction }) => (
-    <View style={styles.transactionItem}>
-        <View style={[styles.avatar, { backgroundColor: item.avatarColor }]}>
-            <Text style={styles.initial}>{item.initial}</Text>
-        </View>
-        <View style={styles.transactionDetails}>
-            <View style={styles.nameContainer}>
-                <Text style={styles.name}>{item.name}</Text>
-                <Text style={styles.timestamp}>{item.timestamp}</Text>
-            </View>
-            <View style={styles.messageContainer}>
-                <Text style={styles.message} numberOfLines={1}>
-                    {item.message}
+function TransactionItem({ transaction, accounts, beneficiaires }: { transaction: Transaction, accounts: Account[], beneficiaires: Beneficiaire[] }) {
+    const destinataire = getDestinataire(transaction, accounts, beneficiaires)
+
+     return (
+        <View style={styles.transactionItem}>
+            <View style={styles.avatar}>
+                <Text style={styles.initial}>
+                    {destinataire.charAt(0).toUpperCase()}
                 </Text>
-                {item.amount ? <Text style={styles.amount}>{item.amount}</Text> : null}
+            </View>
+            <View style={styles.transactionDetails}>
+                <View style={styles.nameContainer}>
+                    <Text style={styles.name}>{destinataire}</Text>
+                    <Text style={styles.timestamp}>
+                        {formatDate(transaction.dateTransaction)}
+                    </Text>
+                </View>
+                <View style={styles.messageContainer}>
+                    <Text style={styles.message} numberOfLines={1}>
+                        {transaction.libelle}
+                    </Text>
+                    <Text style={styles.amount}>{transaction.montant}€</Text>
+                </View>
             </View>
         </View>
-    </View>
-);
+    );
+}
 
 export default function LastTransfert() {
+    const { transactions, accounts, beneficiaires } = useAuth();
+
     return (
         <View style={styles.outerContainer}>
             <View style={styles.container}>
                 <ScrollView showsVerticalScrollIndicator={false}>
                     <FlatList
                         data={transactions}
-                        renderItem={({ item }) => <TransactionItem item={item} />}
-                        keyExtractor={item => item.id}
+                        renderItem={({ item }) => <TransactionItem transaction={item} accounts={accounts} beneficiaires={beneficiaires} />}
+                        keyExtractor={(item) => item.id.toString()}
                         scrollEnabled={false}
                     />
                 </ScrollView>

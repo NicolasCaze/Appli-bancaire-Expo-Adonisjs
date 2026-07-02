@@ -1,12 +1,13 @@
 // 1. Importer React, createContext, useState, useEffect
 import { createContext, useContext, useEffect, useState } from "react";
-import { Account, User, Payment, Transaction } from "../types/auth";
+import { Account, User, Payment, Transaction, Beneficiaire } from "../types/auth";
 import secureStorage from "@/services/secureStorage";
 import authService from "@/services/authService";
 import { router } from "expo-router";
 import accountService from "@/services/accountService";
 import paymentService from "@/services/paymentService";
 import transactionService from "@/services/transactionService";
+import beneficiaireService from "@/services/beneficiaireService";
 
 
 // 4. Définir le type du Context
@@ -16,12 +17,14 @@ type AuthContextType = {
   accounts: Account[]
   payments: Payment[]
   transactions: Transaction[]
+  beneficiaires: Beneficiaire[]
   login: (email: string, password: string) => Promise<void>
   logout: () => Promise<void>
   loadUser: () => Promise<void>
   loadAccounts: () => Promise<void>
   loadPayments: () => Promise<void>
   loadTransactions: () => Promise<void>
+  loadBeneficiaires: () => Promise<void>
 }
 
 
@@ -34,6 +37,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     const [payments, setPayments] = useState<Payment[]>([])
     const [transactions, setTransactions] = useState<Transaction[]>([])
     const [accounts, setAccounts] = useState<Account[]>([])
+    const [beneficiaires, setBeneficiaires] = useState<Beneficiaire[]>([])
 
     const loadUser = async () => {
         const user = await secureStorage.getUser()
@@ -42,7 +46,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
             await loadAccounts()
             await loadPayments()
             await loadTransactions()
-            
+            await loadBeneficiaires()
+
         }
         setLoading(false)
     }
@@ -74,21 +79,37 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
             console.error(error)
             setTransactions([])
         }
-    } 
+    }
+
+    const loadBeneficiaires = async () => {
+        try {
+            const beneficiaires = await beneficiaireService.getMyBeneficiaires()
+            setBeneficiaires(beneficiaires)
+        } catch (error) {
+            console.error(error)
+            setBeneficiaires([])
+        }
+    }
 
 
     const login = async (email: string, password: string) => {
-        authService.login(email, password)
-        .then(async (user) => {
+        try {
+            const user = await authService.login(email, password)
             setUser(user)
-            await loadAccounts()
-            await loadPayments()
-            await loadTransactions()
+
+            await Promise.all([
+                loadAccounts(),
+                loadPayments(),
+                loadTransactions(),
+                loadBeneficiaires()
+            ])
+
             setLoading(false)
-        }).catch((error) => {
+        } catch (error) {
             console.error(error)
             setLoading(false)
-        })
+            throw error
+        }
     }
     const logout = async () => {
         authService.logout()
@@ -97,6 +118,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
             setAccounts([])
             setPayments([])
             setTransactions([])
+            setBeneficiaires([])
             setLoading(false)
             router.replace('/(auth)/login')
         }).catch((error) => {
@@ -108,7 +130,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     loadUser()
 }, [])
     return (
-        <AuthContext.Provider value={{ user, loading, accounts, payments, transactions, login, logout, loadUser, loadAccounts, loadPayments, loadTransactions }}>
+        <AuthContext.Provider value={{ user, loading, accounts, payments, transactions, beneficiaires, login, logout, loadUser, loadAccounts, loadPayments, loadTransactions, loadBeneficiaires }}>
             {children}
         </AuthContext.Provider>
     )

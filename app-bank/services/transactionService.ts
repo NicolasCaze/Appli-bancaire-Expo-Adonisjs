@@ -1,46 +1,56 @@
-import axios, { AxiosInstance } from 'axios'
-import SecureStorage from './secureStorage'
+import api from './api'
 import type { Transaction } from '../types/auth'
-
-
-
-const API_URL = 'http://192.168.1.64:3333'
+import sessionManager from '@/utils/sessionManager'
 
 class TransactionService {
-  private api: AxiosInstance
-
-  constructor() {
-    this.api = axios.create({
-      baseURL: API_URL,
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      timeout: 10000
-    })
-
-  }
-  
-
-
   async getMyTransactions(): Promise<Transaction[]> {
-  try {
-    const token = await SecureStorage.getAccessToken() 
-    
-    if (!token) {
-      throw new Error('Non authentifié')
+    try {
+      const response = await api.get('/transactions')
+      return response.data
+    } catch (error: any) {
+      if (sessionManager.isSessionExpiredError(error)) {
+        await sessionManager.handleSessionExpired()
+        throw new Error('Votre session a expiré')
+      }
+      throw new Error('Erreur lors de la récupération des transactions')
     }
-    
-    const response = await this.api.get('/transactions', {
-      headers: { 'Authorization': `Bearer ${token}` }
-    })
-    return response.data 
-  } catch (error: any) {
-    if (error.response?.status === 401) {
-      throw new Error('Session expirée, veuillez vous reconnecter')
+  }
+
+  async createInternalTransfer(compteSourceId: number, compteDestinationId: number, montant: number, libelle: string): Promise<Transaction> {
+    try {
+      const response = await api.post('/transactions/create', {
+        compteSourceId,
+        compteDestinationId,
+        montant,
+        libelle
+      })
+      return response.data
+    } catch (error: any) {
+      if (sessionManager.isSessionExpiredError(error)) {
+        await sessionManager.handleSessionExpired()
+        throw new Error('Votre session a expiré')
+      }
+      throw new Error(error.response?.data?.message ?? 'Erreur lors de la création du virement')
     }
-    throw new Error('Erreur lors de la récupération des comptes')
+  }
+
+  async createVirementBeneficiaire(compteSourceId: number, beneficiaireId: number, montant: number, libelle: string): Promise<Transaction> {
+    try {
+      const response = await api.post('/transactions/create-beneficiaire', {
+        compteSourceId,
+        beneficiaireId,
+        montant,
+        libelle
+      })
+      return response.data
+    } catch (error: any) {
+      if (sessionManager.isSessionExpiredError(error)) {
+        await sessionManager.handleSessionExpired()
+        throw new Error('Votre session a expiré')
+      }
+      throw new Error(error.response?.data?.message ?? 'Erreur lors de la création du virement')
+    }
   }
 }
-}
-// 4. Exporter une instance (singleton)
+
 export default new TransactionService()

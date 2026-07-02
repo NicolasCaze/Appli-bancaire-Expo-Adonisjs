@@ -1,4 +1,5 @@
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
+import { router } from 'expo-router';
 import { StyleSheet, TouchableOpacity, View } from "react-native";
 
 
@@ -6,7 +7,7 @@ export default function NavBarHome() {
     return (
         <View style={styles.container}>
             <View style={styles.leftContainer}>
-                <TouchableOpacity style={styles.iconContainer}>
+                <TouchableOpacity style={styles.iconContainer} onPress={() => router.push('/profile')}>
                     <Ionicons name="person" size={24} color="white" />
                 </TouchableOpacity>
             </View>

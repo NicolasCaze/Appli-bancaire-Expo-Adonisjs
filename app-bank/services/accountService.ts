@@ -1,47 +1,33 @@
-// 1. Imports (axios, SecureStorage, types)
-import axios, { AxiosInstance } from 'axios'
-import SecureStorage from './secureStorage'
+import api from './api'
 import type { Account } from '../types/auth'
-
-
-// 3. Classe AccountService
-const API_URL = 'http://192.168.1.64:3333'
+import sessionManager from '@/utils/sessionManager'
 
 class AccountService {
-  private api: AxiosInstance
-
-  constructor() {
-    this.api = axios.create({
-      baseURL: API_URL,
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      timeout: 10000
-    })
-
-  }
-  
-  // Méthode getMyAccounts()
-
   async getMyAccounts(): Promise<Account[]> {
-  try {
-    const token = await SecureStorage.getAccessToken() 
-    
-    if (!token) {
-      throw new Error('Non authentifié')
+    try {
+      const response = await api.get('/accounts')
+      return response.data
+    } catch (error: any) {
+      if (sessionManager.isSessionExpiredError(error)) {
+        await sessionManager.handleSessionExpired()
+        throw new Error('Votre session a expiré')
+      }
+      throw new Error('Erreur lors de la récupération des comptes')
     }
-    
-    const response = await this.api.get('/accounts', {
-      headers: { 'Authorization': `Bearer ${token}` }
-    })
-    return response.data 
-  } catch (error: any) {
-    if (error.response?.status === 401) {
-      throw new Error('Session expirée, veuillez vous reconnecter')
+  }
+
+  async createAccountType(type: 'BANCAIRE' | 'EPARGNE' | 'POCKET') {
+    try {
+      const request = await api.post('/accounts/create', { type })
+      return request.data
+    } catch (error) {
+      if (sessionManager.isSessionExpiredError(error)) {
+        await sessionManager.handleSessionExpired()
+        throw new Error('Votre session a expiré')
+      }
+      throw new Error('Erreur lors de la création du compte')
     }
-    throw new Error('Erreur lors de la récupération des comptes')
   }
 }
-}
-// 4. Exporter une instance (singleton)
+
 export default new AccountService()
