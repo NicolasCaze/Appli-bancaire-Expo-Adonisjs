@@ -32,19 +32,21 @@ export default function TabLayout() {
       },
       headerTransparent: true,
     }}>
-      <Tabs.Screen 
+      <Tabs.Screen
         name="index"
         options={{
-          title: '',
+          title: 'Accueil',
+          tabBarAccessibilityLabel: 'Accueil',
           tabBarIcon: ({ color, focused }) => (
             <Ionicons name={focused ? 'home-sharp' : 'home-outline'} color={color} size={24} />
           ),
         }} />
-      <Tabs.Screen 
+      <Tabs.Screen
         name="transfert"
         options={{
-          title: '',
-          tabBarIcon: ({ color, focused }) => (
+          title: 'Virements',
+          tabBarAccessibilityLabel: 'Virements',
+          tabBarIcon: ({ color }) => (
             <FontAwesome6 name="arrow-right-arrow-left" size={24} color={color} />
           ),
         }}

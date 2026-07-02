@@ -39,11 +39,14 @@ export default function LastPayments({accountId}: Props) {
                 ))}
                 
                 {filteredPayments.length > 3 && (
-                    <TouchableOpacity 
+                    <TouchableOpacity
                         style={styles.seeMoreButton}
                         onPress={() => console.log('Voir plus')}
+                        accessibilityRole="button"
+                        accessibilityLabel="Voir tous les paiements"
+                        accessibilityHint="Affiche l'historique complet des paiements"
                     >
-                        <Text style={styles.seeMoreText}>See all</Text>
+                        <Text style={styles.seeMoreText}>Voir tout</Text>
                         <FontAwesome6 name="chevron-right" size={14} color={Colors.primary} />
                     </TouchableOpacity>
                 )}

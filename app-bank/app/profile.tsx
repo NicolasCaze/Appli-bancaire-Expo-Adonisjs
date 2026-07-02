@@ -24,13 +24,19 @@ export default function profilePage() {
             onPress={() => router.push('/(profile)/personal-info')}
             color= "white"
             iconName="user"
+            accessibilityRole="button"
+            accessibilityLabel="Informations personnelles"
+            accessibilityHint="Ouvre la page de vos informations personnelles"
         />
         <Text>Profile</Text>
         </View>
         {/* Bouton de déconnexion */}
-                  <TouchableOpacity 
+                  <TouchableOpacity
                     style={styles.logoutButton}
                     onPress={logout}
+                    accessibilityRole="button"
+                    accessibilityLabel="Déconnexion"
+                    accessibilityHint="Vous déconnecte et revient à l'écran de connexion"
                   >
                     <Text style={styles.logoutText}>Déconnexion</Text>
                   </TouchableOpacity>

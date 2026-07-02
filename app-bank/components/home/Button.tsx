@@ -7,20 +7,29 @@ type ButtonProps = {
     iconName: ComponentProps<typeof FontAwesome6>['name'];
     size?: number;
     color?: string;
+    accessibilityRole?: 'button' | 'link' | 'none';
+    accessibilityLabel?: string;
+    accessibilityHint?: string;
 }
 
-export default function Button({ 
-    onPress, 
+export default function Button({
+    onPress,
     iconName,
-    size = 24, 
-    color = 'black' 
+    size = 24,
+    color = 'black',
+    accessibilityRole,
+    accessibilityLabel,
+    accessibilityHint,
 }: ButtonProps) {
     return (
         <View style={styles.container}>
-            <Pressable onPress={onPress} style={({ pressed }) => [
-                styles.pressable,
-                pressed && styles.pressed
-            ]}>
+            <Pressable
+                onPress={onPress}
+                style={({ pressed }) => [styles.pressable, pressed && styles.pressed]}
+                accessibilityRole={accessibilityRole}
+                accessibilityLabel={accessibilityLabel}
+                accessibilityHint={accessibilityHint}
+            >
                 <FontAwesome6 name={iconName} size={size} color={color} />
             </Pressable>
         </View>

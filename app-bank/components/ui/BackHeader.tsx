@@ -9,10 +9,16 @@ type Props = {
 export default function BackHeader({ title }: Props) {
     return (
         <View style={styles.container}>
-            <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
+            <TouchableOpacity
+                onPress={() => router.back()}
+                style={styles.backButton}
+                accessibilityRole="button"
+                accessibilityLabel="Retour"
+                accessibilityHint="Revient à l'écran précédent"
+            >
                 <Ionicons name="arrow-back" size={24} color="#fff" />
             </TouchableOpacity>
-            <Text style={styles.title}>{title}</Text>
+            <Text style={styles.title} accessibilityRole="header">{title}</Text>
         </View>
     )
 }

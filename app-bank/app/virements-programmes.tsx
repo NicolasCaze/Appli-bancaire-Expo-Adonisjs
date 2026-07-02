@@ -142,7 +142,13 @@ export default function VirementsProgrammesScreen() {
                 <SafeAreaView style={styles.container}>
                     <BackHeader title="Virements programmés" />
                     <Text style={styles.empty}>Vous n'avez aucun bénéficiaire enregistré.</Text>
-                    <TouchableOpacity style={styles.button} onPress={() => router.push('/beneficiaires')}>
+                    <TouchableOpacity
+                        style={styles.button}
+                        onPress={() => router.push('/beneficiaires')}
+                        accessibilityRole="button"
+                        accessibilityLabel="Ajouter un bénéficiaire"
+                        accessibilityHint="Ouvre l'écran de gestion des bénéficiaires"
+                    >
                         <Text style={styles.buttonText}>Ajouter un bénéficiaire</Text>
                     </TouchableOpacity>
                 </SafeAreaView>
@@ -171,7 +177,12 @@ export default function VirementsProgrammesScreen() {
                             <Text style={styles.virementDetail}>{frequenceLabel[item.frequence]} · {item.statut}</Text>
                             <Text style={styles.virementDetail}>Prochaine exécution : {item.dateProchaineExecution.slice(0, 10)}</Text>
                             {item.statut === 'ACTIF' && (
-                                <TouchableOpacity onPress={() => handleCancel(item)}>
+                                <TouchableOpacity
+                                    onPress={() => handleCancel(item)}
+                                    accessibilityRole="button"
+                                    accessibilityLabel={`Annuler le virement programmé vers ${item.beneficiaire?.nom ?? 'bénéficiaire'}`}
+                                    accessibilityHint="Annule ce virement programmé"
+                                >
                                     <Text style={styles.cancelText}>Annuler</Text>
                                 </TouchableOpacity>
                             )}
@@ -192,6 +203,9 @@ export default function VirementsProgrammesScreen() {
                                     key={beneficiaire.id}
                                     style={[styles.option, beneficiaireId === beneficiaire.id && styles.optionSelected]}
                                     onPress={() => setBeneficiaireId(beneficiaire.id)}
+                                    accessibilityRole="button"
+                                    accessibilityLabel={beneficiaire.nom}
+                                    accessibilityState={{ selected: beneficiaireId === beneficiaire.id }}
                                 >
                                     <Text style={styles.optionText}>{beneficiaire.nom}</Text>
                                 </TouchableOpacity>
@@ -203,6 +217,9 @@ export default function VirementsProgrammesScreen() {
                                     key={freq}
                                     style={[styles.option, frequence === freq && styles.optionSelected]}
                                     onPress={() => setFrequence(freq)}
+                                    accessibilityRole="button"
+                                    accessibilityLabel={frequenceLabel[freq]}
+                                    accessibilityState={{ selected: frequence === freq }}
                                 >
                                     <Text style={styles.optionText}>{frequenceLabel[freq]}</Text>
                                 </TouchableOpacity>
@@ -216,6 +233,8 @@ export default function VirementsProgrammesScreen() {
                                 value={montant}
                                 onChangeText={setMontant}
                                 keyboardType="decimal-pad"
+                                accessibilityLabel="Montant du virement programmé"
+                                accessibilityHint="Entrez le montant en euros"
                             />
 
                             <Text style={styles.label}>Libellé (optionnel)</Text>
@@ -225,6 +244,8 @@ export default function VirementsProgrammesScreen() {
                                 placeholderTextColor="rgba(255,255,255,0.5)"
                                 value={libelle}
                                 onChangeText={setLibelle}
+                                accessibilityLabel="Libellé du virement programmé"
+                                accessibilityHint="Description optionnelle du virement"
                             />
 
                             <Text style={styles.label}>Date de la prochaine exécution (AAAA-MM-JJ)</Text>
@@ -234,6 +255,8 @@ export default function VirementsProgrammesScreen() {
                                 placeholderTextColor="rgba(255,255,255,0.5)"
                                 value={dateProchaineExecution}
                                 onChangeText={setDateProchaineExecution}
+                                accessibilityLabel="Date de la prochaine exécution"
+                                accessibilityHint="Format AAAA-MM-JJ, par exemple 2026-07-01"
                             />
 
                             {frequence !== 'UNIQUE' && (
@@ -245,6 +268,8 @@ export default function VirementsProgrammesScreen() {
                                         placeholderTextColor="rgba(255,255,255,0.5)"
                                         value={dateFin}
                                         onChangeText={setDateFin}
+                                        accessibilityLabel="Date de fin du virement programmé"
+                                        accessibilityHint="Optionnel, format AAAA-MM-JJ"
                                     />
                                 </>
                             )}
@@ -253,6 +278,9 @@ export default function VirementsProgrammesScreen() {
                                 style={[styles.button, creating && styles.buttonDisabled]}
                                 onPress={handleCreate}
                                 disabled={creating}
+                                accessibilityRole="button"
+                                accessibilityLabel="Programmer le virement"
+                                accessibilityState={{ disabled: creating }}
                             >
                                 <Text style={styles.buttonText}>{creating ? 'Création...' : 'Programmer le virement'}</Text>
                             </TouchableOpacity>

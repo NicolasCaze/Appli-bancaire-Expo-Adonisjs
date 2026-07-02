@@ -85,6 +85,9 @@ export default function TransferAccountScreen() {
                                     compteDestinationId === account.id && styles.destinationOptionSelected
                                 ]}
                                 onPress={() => setCompteDestinationId(account.id)}
+                                accessibilityRole="button"
+                                accessibilityLabel={`${getAccountLabel(account.type)}, solde : ${account.solde} euros`}
+                                accessibilityState={{ selected: compteDestinationId === account.id }}
                             >
                                 <Text style={styles.destinationText}>{getAccountLabel(account.type)}</Text>
                                 <Text style={styles.destinationSolde}>{account.solde}€</Text>
@@ -100,6 +103,8 @@ export default function TransferAccountScreen() {
                         value={montant}
                         onChangeText={setMontant}
                         keyboardType="decimal-pad"
+                        accessibilityLabel="Montant du virement"
+                        accessibilityHint="Entrez le montant en euros"
                     />
 
                     <Text style={styles.label}>Libellé (optionnel)</Text>
@@ -109,12 +114,17 @@ export default function TransferAccountScreen() {
                         placeholderTextColor="rgba(255,255,255,0.5)"
                         value={libelle}
                         onChangeText={setLibelle}
+                        accessibilityLabel="Libellé du virement"
+                        accessibilityHint="Description optionnelle du virement"
                     />
 
                     <TouchableOpacity
                         style={[styles.button, loading && styles.buttonDisabled]}
                         onPress={handleTransfer}
                         disabled={loading}
+                        accessibilityRole="button"
+                        accessibilityLabel="Valider le virement"
+                        accessibilityState={{ disabled: loading }}
                     >
                         <Text style={styles.buttonText}>{loading ? 'Envoi...' : 'Valider le virement'}</Text>
                     </TouchableOpacity>

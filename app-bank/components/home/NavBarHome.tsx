@@ -7,16 +7,32 @@ export default function NavBarHome() {
     return (
         <View style={styles.container}>
             <View style={styles.leftContainer}>
-                <TouchableOpacity style={styles.iconContainer} onPress={() => router.push('/profile')}>
+                <TouchableOpacity
+                    style={styles.iconContainer}
+                    onPress={() => router.push('/profile')}
+                    accessibilityRole="button"
+                    accessibilityLabel="Profil utilisateur"
+                    accessibilityHint="Ouvre la page profil"
+                >
                     <Ionicons name="person" size={24} color="white" />
                 </TouchableOpacity>
             </View>
-            
+
             <View style={styles.rightContainer}>
-                <TouchableOpacity style={[styles.iconContainer, styles.marginRight]}>
+                <TouchableOpacity
+                    style={[styles.iconContainer, styles.marginRight]}
+                    accessibilityRole="button"
+                    accessibilityLabel="Statistiques"
+                    accessibilityHint="Affiche les statistiques de dépenses"
+                >
                     <MaterialCommunityIcons name="chart-line" size={24} color="white" />
                 </TouchableOpacity>
-                <TouchableOpacity style={styles.iconContainer}>
+                <TouchableOpacity
+                    style={styles.iconContainer}
+                    accessibilityRole="button"
+                    accessibilityLabel="Carte bancaire"
+                    accessibilityHint="Accède aux informations de carte"
+                >
                     <Ionicons name="card-outline" size={24} color="white" />
                 </TouchableOpacity>
             </View>

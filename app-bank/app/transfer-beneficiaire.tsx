@@ -82,7 +82,13 @@ export default function TransferBeneficiaireScreen() {
                 <SafeAreaView style={styles.container}>
                     <BackHeader title="Virement vers un bénéficiaire" />
                     <Text style={styles.empty}>Vous n'avez aucun bénéficiaire enregistré.</Text>
-                    <TouchableOpacity style={styles.button} onPress={() => router.push('/beneficiaires')}>
+                    <TouchableOpacity
+                        style={styles.button}
+                        onPress={() => router.push('/beneficiaires')}
+                        accessibilityRole="button"
+                        accessibilityLabel="Ajouter un bénéficiaire"
+                        accessibilityHint="Ouvre l'écran de gestion des bénéficiaires"
+                    >
                         <Text style={styles.buttonText}>Ajouter un bénéficiaire</Text>
                     </TouchableOpacity>
                 </SafeAreaView>
@@ -114,6 +120,9 @@ export default function TransferBeneficiaireScreen() {
                                 beneficiaireId === beneficiaire.id && styles.optionSelected
                             ]}
                             onPress={() => setBeneficiaireId(beneficiaire.id)}
+                            accessibilityRole="button"
+                            accessibilityLabel={`${beneficiaire.nom}, IBAN : ${beneficiaire.iban}`}
+                            accessibilityState={{ selected: beneficiaireId === beneficiaire.id }}
                         >
                             <Text style={styles.optionText}>{beneficiaire.nom}</Text>
                             <Text style={styles.optionSubText}>{beneficiaire.iban}</Text>
@@ -128,6 +137,8 @@ export default function TransferBeneficiaireScreen() {
                         value={montant}
                         onChangeText={setMontant}
                         keyboardType="decimal-pad"
+                        accessibilityLabel="Montant du virement"
+                        accessibilityHint="Entrez le montant en euros"
                     />
 
                     <Text style={styles.label}>Libellé (optionnel)</Text>
@@ -137,12 +148,17 @@ export default function TransferBeneficiaireScreen() {
                         placeholderTextColor="rgba(255,255,255,0.5)"
                         value={libelle}
                         onChangeText={setLibelle}
+                        accessibilityLabel="Libellé du virement"
+                        accessibilityHint="Description optionnelle du virement"
                     />
 
                     <TouchableOpacity
                         style={[styles.button, loading && styles.buttonDisabled]}
                         onPress={handleTransfer}
                         disabled={loading}
+                        accessibilityRole="button"
+                        accessibilityLabel="Valider le virement"
+                        accessibilityState={{ disabled: loading }}
                     >
                         <Text style={styles.buttonText}>{loading ? 'Envoi...' : 'Valider le virement'}</Text>
                     </TouchableOpacity>

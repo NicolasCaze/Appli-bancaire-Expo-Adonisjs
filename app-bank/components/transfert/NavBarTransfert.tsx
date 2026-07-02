@@ -7,16 +7,34 @@ export default function NavBarTransfert() {
     return (
         <View style={styles.container}>
             <View style={styles.leftContainer}>
-                <TouchableOpacity style={styles.iconContainer} onPress={() => router.push('/beneficiaires')}>
+                <TouchableOpacity
+                    style={styles.iconContainer}
+                    onPress={() => router.push('/beneficiaires')}
+                    accessibilityRole="button"
+                    accessibilityLabel="Mes bénéficiaires"
+                    accessibilityHint="Gérer vos bénéficiaires enregistrés"
+                >
                     <Ionicons name="person" size={24} color="white" />
                 </TouchableOpacity>
             </View>
 
             <View style={styles.rightContainer}>
-                <TouchableOpacity style={[styles.iconContainer, styles.marginRight]} onPress={() => router.push('/virements-programmes')}>
+                <TouchableOpacity
+                    style={[styles.iconContainer, styles.marginRight]}
+                    onPress={() => router.push('/virements-programmes')}
+                    accessibilityRole="button"
+                    accessibilityLabel="Virements programmés"
+                    accessibilityHint="Consulter et gérer vos virements programmés"
+                >
                     <Ionicons name="calendar-clear" size={24} color="white" />
                 </TouchableOpacity>
-                <TouchableOpacity style={styles.iconContainer} onPress={() => router.push('/transfer-beneficiaire')}>
+                <TouchableOpacity
+                    style={styles.iconContainer}
+                    onPress={() => router.push('/transfer-beneficiaire')}
+                    accessibilityRole="button"
+                    accessibilityLabel="Nouveau virement vers un bénéficiaire"
+                    accessibilityHint="Effectuer un virement vers un bénéficiaire"
+                >
                     <Ionicons name="add" size={24} color="white" />
                 </TouchableOpacity>
             </View>

@@ -69,12 +69,17 @@ export default function BeneficiairesScreen() {
                     contentContainerStyle={styles.list}
                     ListEmptyComponent={<Text style={styles.empty}>Aucun bénéficiaire enregistré</Text>}
                     renderItem={({ item }) => (
-                        <View style={styles.beneficiaireItem}>
+                        <View style={styles.beneficiaireItem} accessibilityRole="none">
                             <View>
                                 <Text style={styles.beneficiaireNom}>{item.nom}</Text>
-                                <Text style={styles.beneficiaireIban}>{item.iban}</Text>
+                                <Text style={styles.beneficiaireIban} accessibilityLabel={`IBAN : ${item.iban}`}>{item.iban}</Text>
                             </View>
-                            <TouchableOpacity onPress={() => handleDelete(item)}>
+                            <TouchableOpacity
+                                onPress={() => handleDelete(item)}
+                                accessibilityRole="button"
+                                accessibilityLabel={`Supprimer ${item.nom}`}
+                                accessibilityHint="Supprime ce bénéficiaire de votre liste"
+                            >
                                 <Text style={styles.deleteText}>Supprimer</Text>
                             </TouchableOpacity>
                         </View>
@@ -89,6 +94,8 @@ export default function BeneficiairesScreen() {
                         placeholderTextColor="rgba(255,255,255,0.5)"
                         value={nom}
                         onChangeText={setNom}
+                        accessibilityLabel="Nom du bénéficiaire"
+                        accessibilityHint="Entrez le nom complet du bénéficiaire"
                     />
 
                     <Text style={styles.label}>IBAN</Text>
@@ -99,12 +106,17 @@ export default function BeneficiairesScreen() {
                         value={iban}
                         onChangeText={setIban}
                         autoCapitalize="characters"
+                        accessibilityLabel="IBAN du bénéficiaire"
+                        accessibilityHint="Entrez le numéro IBAN du bénéficiaire"
                     />
 
                     <TouchableOpacity
                         style={[styles.button, loading && styles.buttonDisabled]}
                         onPress={handleCreate}
                         disabled={loading}
+                        accessibilityRole="button"
+                        accessibilityLabel="Ajouter le bénéficiaire"
+                        accessibilityState={{ disabled: loading }}
                     >
                         <Text style={styles.buttonText}>{loading ? 'Ajout...' : 'Ajouter le bénéficiaire'}</Text>
                     </TouchableOpacity>
