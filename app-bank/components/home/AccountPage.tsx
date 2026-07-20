@@ -4,6 +4,7 @@ import ActionButtons from "./ActionButtons";
 import LastPayments from "./LastPayments";
 import Patrimoine from "./Patrimoine";
 import DepenseGraphique from "./DepenseGraphique";
+import BudgetCategories from "./BudgetCategories";
 import { useAuth } from "@/contexts/AuthContext";
 
 type Props= {
@@ -40,6 +41,7 @@ export default function AccountPage({accountId, currentPage = 0, pageIndex = 0}:
             <LastPayments accountId={accountId}/>
             <Patrimoine />
             <DepenseGraphique accountId={accountId}/>
+            <BudgetCategories />
         </ScrollView>
     )
 }

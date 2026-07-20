@@ -79,3 +79,13 @@ export interface RefreshResponse {
 export interface LogoutResponse {
   message: string
 }
+
+export type BudgetStatut = 'ok' | 'warning' | 'exceeded'
+
+export interface BudgetCategorie {
+  categorie: string
+  plafond: number
+  cumul: number
+  pourcentage: number
+  statut: BudgetStatut
+}

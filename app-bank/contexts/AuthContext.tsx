@@ -1,6 +1,6 @@
 // 1. Importer React, createContext, useState, useEffect
 import { createContext, useContext, useEffect, useState } from "react";
-import { Account, User, Payment, Transaction, Beneficiaire } from "../types/auth";
+import { Account, User, Payment, Transaction, Beneficiaire, BudgetCategorie } from "../types/auth";
 import secureStorage from "@/services/secureStorage";
 import authService from "@/services/authService";
 import { router } from "expo-router";
@@ -18,6 +18,7 @@ type AuthContextType = {
   payments: Payment[]
   transactions: Transaction[]
   beneficiaires: Beneficiaire[]
+  budgetStatut: BudgetCategorie[]
   login: (email: string, password: string) => Promise<void>
   logout: () => Promise<void>
   loadUser: () => Promise<void>
@@ -25,6 +26,7 @@ type AuthContextType = {
   loadPayments: () => Promise<void>
   loadTransactions: () => Promise<void>
   loadBeneficiaires: () => Promise<void>
+  loadBudgetStatut: () => Promise<void>
 }
 
 
@@ -38,6 +40,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     const [transactions, setTransactions] = useState<Transaction[]>([])
     const [accounts, setAccounts] = useState<Account[]>([])
     const [beneficiaires, setBeneficiaires] = useState<Beneficiaire[]>([])
+    const [budgetStatut, setBudgetStatut] = useState<BudgetCategorie[]>([])
 
     const loadUser = async () => {
         const user = await secureStorage.getUser()
@@ -47,7 +50,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
             await loadPayments()
             await loadTransactions()
             await loadBeneficiaires()
-
+            await loadBudgetStatut()
         }
         setLoading(false)
     }
@@ -91,6 +94,16 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         }
     }
 
+    const loadBudgetStatut = async () => {
+        try {
+            const data = await paymentService.getBudgetStatut()
+            setBudgetStatut(data)
+        } catch (error) {
+            console.error(error)
+            setBudgetStatut([])
+        }
+    }
+
 
     const login = async (email: string, password: string) => {
         try {
@@ -101,7 +114,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
                 loadAccounts(),
                 loadPayments(),
                 loadTransactions(),
-                loadBeneficiaires()
+                loadBeneficiaires(),
+                loadBudgetStatut(),
             ])
 
             setLoading(false)
@@ -119,6 +133,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
             setPayments([])
             setTransactions([])
             setBeneficiaires([])
+            setBudgetStatut([])
             setLoading(false)
             router.replace('/(auth)/login')
         }).catch((error) => {
@@ -130,7 +145,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     loadUser()
 }, [])
     return (
-        <AuthContext.Provider value={{ user, loading, accounts, payments, transactions, beneficiaires, login, logout, loadUser, loadAccounts, loadPayments, loadTransactions, loadBeneficiaires }}>
+        <AuthContext.Provider value={{ user, loading, accounts, payments, transactions, beneficiaires, budgetStatut, login, logout, loadUser, loadAccounts, loadPayments, loadTransactions, loadBeneficiaires, loadBudgetStatut }}>
             {children}
         </AuthContext.Provider>
     )
