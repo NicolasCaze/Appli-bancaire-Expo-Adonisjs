@@ -5,23 +5,20 @@ import { router } from 'expo-router';
 
 type Props = {
     accountId?: number
-    accountType?: string
 }
 
-export default function ActionButtons({ accountId, accountType }: Props) {
+export default function ActionButtons({ accountId }: Props) {
     return (
         <View style={styles.container}>
-            {accountType === 'BANCAIRE' && (
-                <Pressable
-                    onPress={() => router.push({ pathname: '/transfer-account', params: { accountId: String(accountId) } })}
-                    style={({ pressed }) => [styles.pressable, pressed && styles.pressed]}
-                    accessibilityRole="button"
-                    accessibilityLabel="Virement entre comptes"
-                    accessibilityHint="Effectuer un virement vers un autre compte"
-                >
-                    <FontAwesome6 name="plus" size={24} color="#fff" />
-                </Pressable>
-            )}
+            <Pressable
+                onPress={() => router.push({ pathname: '/transfer-account', params: { accountId: String(accountId) } })}
+                style={({ pressed }) => [styles.pressable, pressed && styles.pressed]}
+                accessibilityRole="button"
+                accessibilityLabel="Virement entre comptes"
+                accessibilityHint="Effectuer un virement vers un autre compte"
+            >
+                <FontAwesome6 name="plus" size={24} color="#fff" />
+            </Pressable>
             <Pressable
                 onPress={() => console.log('information')}
                 style={({ pressed }) => [styles.pressable, pressed && styles.pressed]}

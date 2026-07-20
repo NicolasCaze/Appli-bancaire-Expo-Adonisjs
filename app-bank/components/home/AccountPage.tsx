@@ -13,16 +13,13 @@ type Props= {
 }
 
 export default function AccountPage({accountId, currentPage = 0, pageIndex = 0}: Props) {
-    const { accounts } = useAuth()
-    const accountType = accounts.find((account) => account.id === accountId)?.type
-
     return (
         <ScrollView
             showsVerticalScrollIndicator={false}
             contentContainerStyle={{ gap: 20, paddingBottom: 100 }}
         >
             <AccountBalance accountId={accountId}/>
-            <ActionButtons accountId={accountId} accountType={accountType}/>
+            <ActionButtons accountId={accountId}/>
             
             {/* Indicateur de pagination */}
             <View style={styles.paginationContainer}>
