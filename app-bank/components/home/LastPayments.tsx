@@ -3,48 +3,117 @@ import { FontAwesome6 } from '@expo/vector-icons';
 import { StyleSheet, Text, View, TouchableOpacity } from "react-native";
 import { formatDate } from '@/utils/dateFormatter';
 import { Colors } from '@/constants/Colors';
+import { router } from 'expo-router';
 
 type Props = {
     accountId?: number
 }
 
-export default function LastPayments({accountId}: Props) {
-    const { payments } = useAuth()
+type Item =
+    | { kind: 'payment'; id: number; label: string; date: string; amount: number; debit: boolean }
+    | { kind: 'transaction'; id: number; label: string; date: string; amount: number; debit: boolean }
 
-    const filteredPayments = accountId 
-        ? payments.filter(payment => payment.accountId === accountId)
-        : payments
-    
+function accountTypeLabel(type: string): string {
+    switch (type) {
+        case 'BANCAIRE': return 'Compte bancaire'
+        case 'EPARGNE': return 'Compte épargne'
+        case 'POCKET': return 'Pocket'
+        default: return type
+    }
+}
+
+export default function LastPayments({ accountId }: Props) {
+    const { payments, transactions, accounts, beneficiaires } = useAuth()
+
+    const items: Item[] = []
+
+    payments
+        .filter(p => !accountId || p.accountId === accountId)
+        .forEach(p => items.push({
+            kind: 'payment',
+            id: p.id,
+            label: p.description,
+            date: p.datePaiement,
+            amount: Number(p.montant),
+            debit: true,
+        }))
+
+    transactions
+        .filter(t =>
+            (accountId ? t.compteSourceId === accountId || t.compteDestinationId === accountId : true)
+            && t.statut !== 'ECHOUÉE'
+        )
+        .forEach(t => {
+            const isDebit = t.compteSourceId === accountId
+            let label: string
+
+            if (t.type === 'EXTERNAL') {
+                const benef = beneficiaires.find(b => b.id === t.beneficiaireId)
+                label = `Vers ${benef?.nom ?? 'bénéficiaire'}`
+            } else if (isDebit) {
+                const dest = accounts.find(a => a.id === t.compteDestinationId)
+                label = dest ? `Vers ${accountTypeLabel(dest.type)}` : 'Virement sortant'
+            } else {
+                const src = accounts.find(a => a.id === t.compteSourceId)
+                label = src ? `De ${accountTypeLabel(src.type)}` : 'Virement reçu'
+            }
+
+            items.push({
+                kind: 'transaction',
+                id: t.id,
+                label,
+                date: t.dateTransaction,
+                amount: Number(t.montant),
+                debit: isDebit,
+            })
+        })
+
+    items.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+
+    const visible = items.slice(0, 3)
+
     return (
         <View style={styles.wrapper}>
             <View style={styles.whiteContainer}>
-                {filteredPayments.slice(0, 3).map((payment, index) => (
-                    <View key={payment.id}>
+                {visible.length === 0 ? (
+                    <Text style={styles.empty}>Aucune transaction récente</Text>
+                ) : visible.map((item, index) => (
+                    <View key={`${item.kind}-${item.id}`}>
                         <View style={styles.container}>
                             <View style={styles.iconContainer}>
-                                <FontAwesome6 name="cart-shopping" size={24} color={Colors.primary} />
+                                {item.kind === 'payment' ? (
+                                    <FontAwesome6 name="cart-shopping" size={20} color={Colors.primary} />
+                                ) : (
+                                    <FontAwesome6
+                                        name={item.debit ? 'arrow-right' : 'arrow-left'}
+                                        size={20}
+                                        color={item.debit ? '#ef4444' : '#22c55e'}
+                                    />
+                                )}
                             </View>
-                            
+
                             <View style={styles.textContainer}>
-                                <Text style={styles.title}>{payment.description}</Text>
-                                <Text style={styles.date}>{formatDate(payment.datePaiement)}</Text>
+                                <Text style={styles.title}>{item.label}</Text>
+                                <Text style={styles.date}>{formatDate(item.date)}</Text>
                             </View>
-                            
-                            <Text style={styles.amount}>-{payment.montant}€</Text>
+
+                            <Text style={[styles.amount, !item.debit && styles.amountCredit]}>
+                                {item.debit ? '-' : '+'}{item.amount}€
+                            </Text>
                         </View>
-                        {index < filteredPayments.slice(0, 3).length - 1 && (
+                        {index < visible.length - 1 && (
                             <View style={styles.separator} />
                         )}
                     </View>
                 ))}
-                
-                {filteredPayments.length > 3 && (
+
+                {accountId && (
                     <TouchableOpacity
                         style={styles.seeMoreButton}
-                        onPress={() => console.log('Voir plus')}
+                        onPress={() => router.push({ pathname: '/account-transactions', params: { accountId: String(accountId) } })}
                         accessibilityRole="button"
-                        accessibilityLabel="Voir tous les paiements"
-                        accessibilityHint="Affiche l'historique complet des paiements"
+                        accessibilityLabel="Voir toutes les transactions"
+                        accessibilityHint="Affiche l'historique complet des transactions"
                     >
                         <Text style={styles.seeMoreText}>Voir tout</Text>
                         <FontAwesome6 name="chevron-right" size={14} color={Colors.primary} />
@@ -105,6 +174,16 @@ const styles = StyleSheet.create({
         color: '#000',
         fontSize: 16,
         fontWeight: '600',
+    },
+    amountCredit: {
+        color: '#22c55e',
+    },
+    empty: {
+        color: '#8E8E93',
+        fontSize: 14,
+        fontStyle: 'italic',
+        textAlign: 'center',
+        paddingVertical: 12,
     },
     seeMoreButton: {
         flexDirection: 'row',

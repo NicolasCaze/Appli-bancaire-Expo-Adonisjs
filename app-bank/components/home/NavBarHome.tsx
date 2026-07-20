@@ -1,6 +1,6 @@
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { router } from 'expo-router';
-import { StyleSheet, TouchableOpacity, View } from "react-native";
+import { Alert, StyleSheet, TouchableOpacity, View } from "react-native";
 
 
 export default function NavBarHome() {
@@ -21,6 +21,7 @@ export default function NavBarHome() {
             <View style={styles.rightContainer}>
                 <TouchableOpacity
                     style={[styles.iconContainer, styles.marginRight]}
+                    onPress={() => Alert.alert('Fonctionnalité à venir', 'Cette fonctionnalité arrive prochainement.')}
                     accessibilityRole="button"
                     accessibilityLabel="Statistiques"
                     accessibilityHint="Affiche les statistiques de dépenses"
@@ -29,6 +30,7 @@ export default function NavBarHome() {
                 </TouchableOpacity>
                 <TouchableOpacity
                     style={styles.iconContainer}
+                    onPress={() => Alert.alert('Fonctionnalité à venir', 'Cette fonctionnalité arrive prochainement.')}
                     accessibilityRole="button"
                     accessibilityLabel="Carte bancaire"
                     accessibilityHint="Accède aux informations de carte"

@@ -8,7 +8,7 @@ import NavBarHome from '@/components/home/NavBarHome';
 import Patrimoine from '@/components/home/Patrimoine';
 import { Colors } from '@/constants/Colors';
 import { LinearGradient } from 'expo-linear-gradient';
-import { ScrollView, StyleSheet, Text, View, TouchableOpacity, SafeAreaView } from 'react-native';
+import { ScrollView, StyleSheet, View, SafeAreaView } from 'react-native';
 import { useAuth } from '@/contexts/AuthContext'
 import PagerView from 'react-native-pager-view'
 import AccountPage from '@/components/home/AccountPage';
@@ -16,7 +16,7 @@ import CreateAccountPage from '@/components/home/CreateAccountPage';
 import { useState } from 'react';
 
 export default function HomeScreen() {
-  const { user, logout, accounts, loadAccounts } = useAuth()
+  const { accounts, loadAccounts } = useAuth()
   const [currentPage, setCurrentPage] = useState(0)
 
   const compteBancaire = accounts.find(account => account.type === 'BANCAIRE')
@@ -35,14 +35,6 @@ export default function HomeScreen() {
       <SafeAreaView style={styles.bodyhome}>
         <View style={styles.header}>
           <NavBarHome  />
-          
-          {/* Bouton de déconnexion */}
-          <TouchableOpacity 
-            style={styles.logoutButton}
-            onPress={logout}
-          >
-            <Text style={styles.logoutText}>🚪 Déconnexion</Text>
-          </TouchableOpacity>
         </View>
 
         <PagerView 
@@ -109,20 +101,6 @@ const styles = StyleSheet.create({
   },
   button: {
     alignItems: 'center',
-  },
-  logoutButton: {
-    backgroundColor: 'rgba(255, 255, 255, 0.2)',
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-    borderRadius: 8,
-    marginTop: 15,
-    marginHorizontal: 20,
-    alignSelf: 'flex-end'
-  },
-  logoutText: {
-    color: 'white',
-    fontSize: 14,
-    fontWeight: '600'
   },
   transactionsTitle: {
     color: 'white',

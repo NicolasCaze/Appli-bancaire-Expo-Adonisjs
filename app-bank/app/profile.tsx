@@ -1,3 +1,4 @@
+import { Ionicons } from '@expo/vector-icons';
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { useAuth } from "@/contexts/AuthContext";
 import { LinearGradient } from "expo-linear-gradient";
@@ -7,16 +8,26 @@ import { router } from "expo-router";
 
 
 export default function profilePage() {
-    const { user, logout } = useAuth();
+    const { user } = useAuth();
     return (
             <LinearGradient
               colors={[Colors.gradient.start, Colors.gradient.middle, Colors.gradient.end]}
               style={{ flex: 1 }}
             >
     <SafeAreaView style={styles.bodyhome}>
+        <View style={styles.backHeader}>
+            <TouchableOpacity
+                onPress={() => router.back()}
+                style={styles.backButton}
+                accessibilityRole="button"
+                accessibilityLabel="Retour"
+                accessibilityHint="Revenir à l'écran précédent"
+            >
+                <Ionicons name="arrow-back" size={24} color="white" />
+            </TouchableOpacity>
+        </View>
         <View style={styles.userInfo}>
-            <Text>Profile</Text>
-            <Text>{user?.firstname} {user?.lastname}</Text>
+            <Text style={styles.userName}>{user?.firstname} {user?.lastname}</Text>
         </View>
         <View style={styles.buttonInfo}>
             <TouchableOpacity
@@ -35,19 +46,9 @@ export default function profilePage() {
                 accessibilityLabel="Mon budget mensuel"
                 accessibilityHint="Définir un budget mensuel et activer les alertes"
             >
-                <Text style={styles.menuText}>💰 Mon budget mensuel</Text>
+                <Text style={styles.menuText}>Mon budget mensuel</Text>
             </TouchableOpacity>
         </View>
-        {/* Bouton de déconnexion */}
-                  <TouchableOpacity
-                    style={styles.logoutButton}
-                    onPress={logout}
-                    accessibilityRole="button"
-                    accessibilityLabel="Déconnexion"
-                    accessibilityHint="Vous déconnecte et revient à l'écran de connexion"
-                  >
-                    <Text style={styles.logoutText}>Déconnexion</Text>
-                  </TouchableOpacity>
         </SafeAreaView>
         </LinearGradient>
     )
@@ -56,24 +57,27 @@ const styles = StyleSheet.create({
     bodyhome: {
         flex: 1,
     },
+    backHeader: {
+        paddingHorizontal: 16,
+        paddingTop: 8,
+        paddingBottom: 4,
+    },
+    backButton: {
+        width: 40,
+        height: 40,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
     userInfo: {
         flex: 0,
         justifyContent: 'center',
         alignItems: 'center',
+        paddingVertical: 12,
     },
-    logoutButton: {
-        backgroundColor: 'rgba(255, 255, 255, 0.2)',
-        paddingVertical: 10,
-        paddingHorizontal: 20,
-        borderRadius: 8,
-        marginTop: 15,
-        marginHorizontal: 20,
-        alignSelf: 'flex-start',
-    },
-    logoutText: {
-        color: 'white',
-        fontSize: 14,
-        fontWeight: '600',
+    userName: {
+        color: '#fff',
+        fontSize: 18,
+        fontWeight: '700',
     },
     buttonInfo: {
         paddingVertical: 10,
