@@ -3,7 +3,6 @@ import { useAuth } from "@/contexts/AuthContext";
 import { LinearGradient } from "expo-linear-gradient";
 import { Colors } from '@/constants/Colors';
 import { SafeAreaView } from "react-native-safe-area-context";
-import Button from "@/components/home/Button";
 import { router } from "expo-router";
 
 
@@ -20,15 +19,24 @@ export default function profilePage() {
             <Text>{user?.firstname} {user?.lastname}</Text>
         </View>
         <View style={styles.buttonInfo}>
-        <Button
-            onPress={() => router.push('/(profile)/personal-info')}
-            color= "white"
-            iconName="user"
-            accessibilityRole="button"
-            accessibilityLabel="Informations personnelles"
-            accessibilityHint="Ouvre la page de vos informations personnelles"
-        />
-        <Text>Profile</Text>
+            <TouchableOpacity
+                style={styles.menuItem}
+                onPress={() => router.push('/(profile)/personal-info')}
+                accessibilityRole="button"
+                accessibilityLabel="Informations personnelles"
+                accessibilityHint="Ouvre la page de vos informations personnelles"
+            >
+                <Text style={styles.menuText}>Informations personnelles</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+                style={styles.menuItem}
+                onPress={() => router.push('/(profile)/budget')}
+                accessibilityRole="button"
+                accessibilityLabel="Mon budget mensuel"
+                accessibilityHint="Définir un budget mensuel et activer les alertes"
+            >
+                <Text style={styles.menuText}>💰 Mon budget mensuel</Text>
+            </TouchableOpacity>
         </View>
         {/* Bouton de déconnexion */}
                   <TouchableOpacity
@@ -54,21 +62,32 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     logoutButton: {
-    backgroundColor: 'rgba(255, 255, 255, 0.2)',
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-    borderRadius: 8,
-    marginTop: 15,
-    marginHorizontal: 20,
-    alignSelf: 'flex-start'
-  },
+        backgroundColor: 'rgba(255, 255, 255, 0.2)',
+        paddingVertical: 10,
+        paddingHorizontal: 20,
+        borderRadius: 8,
+        marginTop: 15,
+        marginHorizontal: 20,
+        alignSelf: 'flex-start',
+    },
     logoutText: {
-    color: 'white',
-    fontSize: 14,
-    fontWeight: '600'
-  },
-  buttonInfo: {
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-  }
+        color: 'white',
+        fontSize: 14,
+        fontWeight: '600',
+    },
+    buttonInfo: {
+        paddingVertical: 10,
+        paddingHorizontal: 20,
+        gap: 10,
+    },
+    menuItem: {
+        backgroundColor: 'rgba(255,255,255,0.15)',
+        borderRadius: 10,
+        padding: 14,
+    },
+    menuText: {
+        color: '#fff',
+        fontSize: 15,
+        fontWeight: '600',
+    },
 })
