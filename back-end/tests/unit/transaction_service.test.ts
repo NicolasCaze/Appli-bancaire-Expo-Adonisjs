@@ -119,6 +119,18 @@ describe('createTransactionService — virement interne', () => {
     expect(prismaMock.prisma.$transaction).not.toHaveBeenCalled()
   })
 
+  test('virement depuis un compte ÉPARGNE vers BANCAIRE → succès', async () => {
+    const tx = setupTx()
+    const compteEpargne = { ...compteSource, id: 3, type: 'EPARGNE', solde: 300 }
+    tx.account.findUnique.mockResolvedValueOnce(compteEpargne).mockResolvedValueOnce(compteSource)
+    tx.account.updateMany.mockResolvedValue({ count: 1 })
+    tx.account.update.mockResolvedValue({})
+    tx.transaction.create.mockResolvedValue({ id: 99, type: 'INTERNAL', statut: 'EFFECTUEE' })
+
+    const result = await service.createTransactionService(10, 3, 1, 100, 'Virement épargne')
+    expect(result).toMatchObject({ type: 'INTERNAL', statut: 'EFFECTUEE' })
+  })
+
   test('isolation utilisateur : virement depuis compte d\'un autre user → rejet 403', async () => {
     const tx = setupTx()
     tx.account.findUnique.mockResolvedValueOnce({ ...compteSource, userId: 99 })
