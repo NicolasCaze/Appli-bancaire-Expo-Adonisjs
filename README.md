@@ -661,6 +661,66 @@ Colors = {
 
 ---
 
+## 🔖 Versioning et convention de commit
+
+### Schéma de versioning
+
+Ce projet suit le [Versioning Sémantique (SemVer)](https://semver.org/) : `MAJEUR.MINEUR.PATCH`
+
+| Incrément | Quand l'utiliser | Exemple |
+|-----------|-----------------|---------|
+| `PATCH` | Correctif de bogue sans rupture | `1.2.0 → 1.2.1` |
+| `MINEUR` | Nouvelle fonctionnalité rétrocompatible | `1.2.0 → 1.3.0` |
+| `MAJEUR` | Rupture de compatibilité (breaking change) | `1.2.0 → 2.0.0` |
+
+Les versions sont documentées dans [`CHANGELOG.md`](./CHANGELOG.md) et matérialisées par des **tags Git annotés** :
+
+```bash
+git tag -a v1.2.0 -m "Description de la version"
+```
+
+### Convention de commit
+
+Les messages de commit suivent le format **Conventional Commits** adapté au français :
+
+```
+<type>: <description courte en français>
+
+[corps optionnel — détails supplémentaires]
+```
+
+**Types autorisés :**
+
+| Type | Usage |
+|------|-------|
+| `feat` | Nouvelle fonctionnalité |
+| `fix` | Correction de bogue |
+| `refactor` | Refactoring sans ajout ni correction |
+| `test` | Ajout ou modification de tests |
+| `docs` | Documentation uniquement |
+| `ci` | Modification de la configuration CI |
+| `chore` | Tâche de maintenance (dépendances, config) |
+
+**Exemples :**
+
+```
+feat: ajouter la gestion des bénéficiaires (ajout, suppression)
+fix: corriger le calcul du solde après virement externe
+docs: ajouter le cahier de recettes et les manuels
+test: couvrir les cas d'erreur du service de virement
+ci: ajouter l'étape npm audit au pipeline GitHub Actions
+```
+
+### Branches
+
+| Branche | Usage |
+|---------|-------|
+| `main` | Branche principale — code stable uniquement |
+| `feat/<nom>` | Développement d'une nouvelle fonctionnalité |
+| `fix/<nom>` | Correction d'un bogue |
+
+---
+
 ## 👥 Contributeurs
 
 Projet développé par Nicolas Caze
