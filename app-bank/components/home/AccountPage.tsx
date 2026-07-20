@@ -19,7 +19,7 @@ export default function AccountPage({accountId, currentPage = 0, pageIndex = 0}:
     return (
         <ScrollView
             showsVerticalScrollIndicator={false}
-            contentContainerStyle={{ gap: 20, paddingBottom: 20 }}
+            contentContainerStyle={{ gap: 20, paddingBottom: 100 }}
         >
             <AccountBalance accountId={accountId}/>
             <ActionButtons accountId={accountId} accountType={accountType}/>
