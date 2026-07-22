@@ -8,7 +8,7 @@ import { router } from "expo-router";
 
 
 export default function profilePage() {
-    const { user } = useAuth();
+    const { user, logout } = useAuth();
     return (
             <LinearGradient
               colors={[Colors.gradient.start, Colors.gradient.middle, Colors.gradient.end]}
@@ -48,7 +48,25 @@ export default function profilePage() {
             >
                 <Text style={styles.menuText}>Mon budget mensuel</Text>
             </TouchableOpacity>
+            <TouchableOpacity
+                style={styles.menuItem}
+                onPress={() => router.push('/(profile)/sessions')}
+                accessibilityRole="button"
+                accessibilityLabel="Sessions actives"
+                accessibilityHint="Voir et déconnecter les appareils connectés à votre compte"
+            >
+                <Text style={styles.menuText}>Sessions actives</Text>
+            </TouchableOpacity>
         </View>
+        <TouchableOpacity
+            style={styles.logoutButton}
+            onPress={logout}
+            accessibilityRole="button"
+            accessibilityLabel="Déconnexion"
+            accessibilityHint="Vous déconnecte et revient à l'écran de connexion"
+        >
+            <Text style={styles.logoutText}>Déconnexion</Text>
+        </TouchableOpacity>
         </SafeAreaView>
         </LinearGradient>
     )
@@ -91,6 +109,19 @@ const styles = StyleSheet.create({
     },
     menuText: {
         color: '#fff',
+        fontSize: 15,
+        fontWeight: '600',
+    },
+    logoutButton: {
+        marginHorizontal: 20,
+        marginTop: 20,
+        backgroundColor: 'rgba(255,255,255,0.15)',
+        borderRadius: 10,
+        padding: 14,
+        alignItems: 'center',
+    },
+    logoutText: {
+        color: '#ff4d4d',
         fontSize: 15,
         fontWeight: '600',
     },

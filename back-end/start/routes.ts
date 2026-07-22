@@ -22,6 +22,7 @@ import PaymentsController from '#controllers/payments_controller'
 import TransactionsController from '#controllers/transactions_controller'
 import BeneficiairesController from '#controllers/beneficiaires_controller'
 import VirementsProgrammesController from '#controllers/virements_programmes_controller'
+import MeController from '#controllers/me_controller'
 
 router.get('/users', [UsersController, 'index']).use(middleware.auth())
 router.get('/accounts', [AccountsController, 'getMyAccount']).use(middleware.auth())
@@ -36,6 +37,11 @@ router.delete('/beneficiaires/:id', [BeneficiairesController, 'deleteBeneficiair
 router.get('/virements-programmes', [VirementsProgrammesController, 'getMyVirementsProgrammes']).use(middleware.auth())
 router.post('/virements-programmes/create', [VirementsProgrammesController, 'createVirementProgramme']).use(middleware.auth())
 router.delete('/virements-programmes/:id', [VirementsProgrammesController, 'annulerVirementProgramme']).use(middleware.auth())
+router.get('/me', [MeController, 'getProfile']).use(middleware.auth())
+router.patch('/me/email', [MeController, 'updateEmail']).use(middleware.auth())
+router.patch('/me/password', [MeController, 'updatePassword']).use(middleware.auth())
+router.get('/me/sessions', [MeController, 'getSessions']).use(middleware.auth())
+router.delete('/me/sessions/:id', [MeController, 'revokeSession']).use(middleware.auth())
 router.post('/create_users', [UsersController, 'createUsers'])
 // Routes d'authentification
 router.post('/auth/login', [AuthController, 'login']).use(middleware.rateLimit())
