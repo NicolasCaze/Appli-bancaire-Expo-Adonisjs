@@ -3,31 +3,30 @@ import NavBarTransfert from '@/components/transfert/NavBarTransfert';
 import { Colors } from '@/constants/Colors';
 import { LinearGradient } from "expo-linear-gradient";
 import { StyleSheet, View } from "react-native";
-import { useAuth } from '@/contexts/AuthContext';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function TransfertScreen() {
-  const { transactions } = useAuth();
     return (
-            <LinearGradient
-              colors={[Colors.gradient.start, Colors.gradient.middle, Colors.gradient.end]}
-              style={{ flex: 1 }}
-            >
-              <View style={styles.container}>
-            <NavBarTransfert />
-            
-        </View>
-          <LastTransfert />
-            </LinearGradient>
-            
-        
+        <LinearGradient
+            colors={[Colors.gradient.start, Colors.gradient.middle, Colors.gradient.end]}
+            style={{ flex: 1 }}
+        >
+            <SafeAreaView style={styles.safeArea}>
+                <View style={styles.header}>
+                    <NavBarTransfert />
+                </View>
+                <LastTransfert />
+            </SafeAreaView>
+        </LinearGradient>
     );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    marginTop: 50, 
-    width: '100%',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
+    safeArea: {
+        flex: 1,
+    },
+    header: {
+        width: '100%',
+        paddingTop: 10,
+    },
 })

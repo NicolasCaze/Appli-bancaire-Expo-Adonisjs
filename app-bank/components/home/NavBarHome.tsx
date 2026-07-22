@@ -1,6 +1,6 @@
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { router } from 'expo-router';
-import { Alert, StyleSheet, TouchableOpacity, View } from "react-native";
+import { Alert, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
 
 export default function NavBarHome() {
@@ -10,6 +10,7 @@ export default function NavBarHome() {
                 <TouchableOpacity
                     style={styles.iconContainer}
                     onPress={() => router.push('/profile')}
+                    hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
                     accessibilityRole="button"
                     accessibilityLabel="Profil utilisateur"
                     accessibilityHint="Ouvre la page profil"
@@ -18,10 +19,15 @@ export default function NavBarHome() {
                 </TouchableOpacity>
             </View>
 
+            <View style={styles.titleContainer} pointerEvents="none">
+                <Text style={styles.title}>Finygo</Text>
+            </View>
+
             <View style={styles.rightContainer}>
                 <TouchableOpacity
                     style={[styles.iconContainer, styles.marginRight]}
                     onPress={() => Alert.alert('Fonctionnalité à venir', 'Cette fonctionnalité arrive prochainement.')}
+                    hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
                     accessibilityRole="button"
                     accessibilityLabel="Statistiques"
                     accessibilityHint="Affiche les statistiques de dépenses"
@@ -31,6 +37,7 @@ export default function NavBarHome() {
                 <TouchableOpacity
                     style={styles.iconContainer}
                     onPress={() => Alert.alert('Fonctionnalité à venir', 'Cette fonctionnalité arrive prochainement.')}
+                    hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
                     accessibilityRole="button"
                     accessibilityLabel="Carte bancaire"
                     accessibilityHint="Accède aux informations de carte"
@@ -79,5 +86,21 @@ const styles = StyleSheet.create({
     },
     marginRight: {
         marginRight: 15,
+    },
+    titleContainer: {
+        position: 'absolute',
+        left: 0,
+        right: 0,
+        top: 0,
+        bottom: 0,
+        paddingBottom: 15,
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    title: {
+        color: '#fff',
+        fontSize: 20,
+        fontWeight: '700',
+        letterSpacing: 0.5,
     },
 });

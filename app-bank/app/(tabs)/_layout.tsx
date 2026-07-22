@@ -2,8 +2,42 @@ import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { Tabs } from "expo-router";
 import { Colors } from '@/constants/Colors';
+import { useAuth } from '@/contexts/AuthContext';
+import { View, Text, StyleSheet } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
+
+function FinygoSplash() {
+  return (
+    <LinearGradient
+      colors={[Colors.gradient.start, Colors.gradient.middle, Colors.gradient.end]}
+      style={splash.container}
+    >
+      <Text style={splash.title}>Finygo</Text>
+    </LinearGradient>
+  )
+}
+
+const splash = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  title: {
+    color: '#fff',
+    fontSize: 52,
+    fontWeight: '700',
+    letterSpacing: 1,
+  },
+})
 
 export default function TabLayout() {
+  const { loading } = useAuth();
+
+  if (loading) {
+    return <FinygoSplash />
+  }
+
   return (
     <Tabs screenOptions={{
       tabBarActiveTintColor: Colors.primary,
@@ -36,6 +70,7 @@ export default function TabLayout() {
         name="index"
         options={{
           title: 'Accueil',
+          headerShown: false,
           tabBarAccessibilityLabel: 'Accueil',
           tabBarIcon: ({ color, focused }) => (
             <Ionicons name={focused ? 'home-sharp' : 'home-outline'} color={color} size={24} />
@@ -45,6 +80,7 @@ export default function TabLayout() {
         name="transfert"
         options={{
           title: 'Virements',
+          headerShown: false,
           tabBarAccessibilityLabel: 'Virements',
           tabBarIcon: ({ color }) => (
             <FontAwesome6 name="arrow-right-arrow-left" size={24} color={color} />
