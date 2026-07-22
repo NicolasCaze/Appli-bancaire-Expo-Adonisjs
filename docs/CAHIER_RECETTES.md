@@ -20,7 +20,7 @@
 | **ID** | AUTH-01 |
 | **Fonctionnalité** | Inscription d'un nouvel utilisateur |
 | **Prérequis** | Aucun compte existant avec cet email |
-| **Étapes** | 1. Ouvrir l'application 2. Appuyer sur "Créer un compte" 3. Remplir prénom, nom, email, mot de passe (8 car. min.), date de naissance, lieu de naissance, adresse 4. Valider |
+| **Étapes** | 1. Ouvrir l'application 2. Appuyer sur "Créer un compte" 3. Remplir prénom, nom, email, mot de passe (8 car. min., majuscule, chiffre, caractère spécial), date de naissance, lieu de naissance, adresse 4. Valider |
 | **Résultat attendu** | Compte créé, redirection vers l'écran de connexion |
 | **Résultat obtenu** | |
 | **Statut** | |

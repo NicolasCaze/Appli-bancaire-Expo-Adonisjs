@@ -41,8 +41,8 @@ api.interceptors.response.use(
         }
 
         // Appel direct via axios (pas via `api`) pour éviter de re-déclencher l'intercepteur
-        const refreshResponse = await axios.post<RefreshResponse>(`${API_URL}/auth/refresh`, { refreshToken })
-        const { accessToken, refreshToken: newRefreshToken } = refreshResponse.data
+        const refreshResponse = await axios.post<{ message: string; data: RefreshResponse }>(`${API_URL}/auth/refresh`, { refreshToken })
+        const { accessToken, refreshToken: newRefreshToken } = refreshResponse.data.data
         await SecureStorage.saveTokens(accessToken, newRefreshToken)
 
         originalRequest.headers.Authorization = `Bearer ${accessToken}`

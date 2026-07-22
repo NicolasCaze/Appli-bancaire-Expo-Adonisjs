@@ -17,27 +17,27 @@ export default function Patrimoine() {
       {/* Titre et total */}
       <View style={styles.header}>
         <Text style={styles.title}>Patrimoine Total</Text>
-        <Text style={styles.totalAmount}>{total}€</Text>
+        <Text style={styles.totalAmount} accessibilityLabel={`Patrimoine total : ${total} euros`}>{total}€</Text>
       </View>
-      
+
       {/* Liste des comptes */}
       <View style={styles.accountsList}>
         {/* Compte bancaire */}
         <View style={styles.accountRow}>
           <Text style={styles.accountLabel}>Compte bancaire</Text>
-          <Text style={styles.accountAmount}>{compteBancaire?.solde || 0}€</Text>
+          <Text style={styles.accountAmount} accessibilityLabel={`Compte bancaire : ${compteBancaire?.solde || 0} euros`}>{compteBancaire?.solde || 0}€</Text>
         </View>
-        
+
         {/* Épargne */}
         <View style={styles.accountRow}>
           <Text style={styles.accountLabel}>Épargne</Text>
-          <Text style={styles.accountAmount}>{epargne?.solde || 0}€</Text>
+          <Text style={styles.accountAmount} accessibilityLabel={`Épargne : ${epargne?.solde || 0} euros`}>{epargne?.solde || 0}€</Text>
         </View>
-        
+
         {/* Pocket */}
         <View style={styles.accountRow}>
           <Text style={styles.accountLabel}>Pocket</Text>
-          <Text style={styles.accountAmount}>{pocket?.solde || 0}€</Text>
+          <Text style={styles.accountAmount} accessibilityLabel={`Pocket : ${pocket?.solde || 0} euros`}>{pocket?.solde || 0}€</Text>
         </View>
       </View>
     </View>

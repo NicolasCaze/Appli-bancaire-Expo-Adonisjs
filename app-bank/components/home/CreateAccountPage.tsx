@@ -35,6 +35,8 @@ const handleCreateAccount = async () => {
             <Button
                 iconName="plus"
                 onPress={handleCreateAccount}
+                accessibilityRole="button"
+                accessibilityLabel={`Ouvrir un ${getAccountName()}`}
             />
             
             <Text style={styles.buttonLabel}>

@@ -27,7 +27,7 @@ export default function AccountBalance({ accountId }: AccountBalanceProps) {
     return (
         <View style={styles.container}>
             <Text style={styles.title}>{title}</Text>
-            <Text style={styles.balance}>{solde}€</Text>
+            <Text style={styles.balance} accessibilityLabel={`Solde : ${solde} euros`}>{solde}€</Text>
         </View>
     )
 }

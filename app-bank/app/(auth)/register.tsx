@@ -1,11 +1,12 @@
 import { useState } from 'react'
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, ScrollView } from 'react-native'
 import { router } from 'expo-router'
-import AuthService from '@/services/authService'
 import BiometricAuth from '@/services/biometricAuth'
 import SecureStorage from '@/services/secureStorage'
+import { useAuth } from '@/contexts/AuthContext'
 
 export default function RegisterScreen() {
+  const { login } = useAuth()
   const [formData, setFormData] = useState({
     firstname: '',
     lastname: '',
@@ -39,8 +40,12 @@ export default function RegisterScreen() {
       return false
     }
 
-    if (formData.password.length < 6) {
-      Alert.alert('Erreur', 'Le mot de passe doit contenir au moins 6 caractères')
+    const passwordPolicy = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{8,}$/
+    if (!passwordPolicy.test(formData.password)) {
+      Alert.alert(
+        'Erreur',
+        'Le mot de passe doit contenir au moins 8 caractères, une majuscule, un chiffre et un caractère spécial'
+      )
       return false
     }
 
@@ -128,7 +133,7 @@ export default function RegisterScreen() {
 
       const data = await response.json()
 
-      await AuthService.login(formData.email, formData.password)
+      await login(formData.email, formData.password)
       await showBiometricPrompt()
     } catch (error: any) {
       Alert.alert('Erreur', error.message || 'Impossible de créer le compte')
@@ -148,6 +153,7 @@ export default function RegisterScreen() {
           value={formData.firstname}
           onChangeText={(value) => updateField('firstname', value)}
           autoCapitalize="words"
+          accessibilityLabel="Prénom"
         />
 
         <TextInput
@@ -156,6 +162,7 @@ export default function RegisterScreen() {
           value={formData.lastname}
           onChangeText={(value) => updateField('lastname', value)}
           autoCapitalize="words"
+          accessibilityLabel="Nom"
         />
 
         <TextInput
@@ -165,6 +172,7 @@ export default function RegisterScreen() {
           onChangeText={(value) => updateField('email', value)}
           keyboardType="email-address"
           autoCapitalize="none"
+          accessibilityLabel="Adresse email"
         />
 
         <TextInput
@@ -173,6 +181,8 @@ export default function RegisterScreen() {
           value={formData.password}
           onChangeText={(value) => updateField('password', value)}
           secureTextEntry
+          accessibilityLabel="Mot de passe"
+          accessibilityHint="Au moins 8 caractères, avec une majuscule, un chiffre et un caractère spécial"
         />
 
         <TextInput
@@ -181,6 +191,7 @@ export default function RegisterScreen() {
           value={formData.confirmPassword}
           onChangeText={(value) => updateField('confirmPassword', value)}
           secureTextEntry
+          accessibilityLabel="Confirmer le mot de passe"
         />
 
         <TextInput
@@ -188,6 +199,7 @@ export default function RegisterScreen() {
           placeholder="Date de naissance (JJ/MM/AAAA)"
           value={formData.dateNaissance}
           onChangeText={(value) => updateField('dateNaissance', value)}
+          accessibilityLabel="Date de naissance, format jour mois année"
         />
 
         <TextInput
@@ -195,6 +207,7 @@ export default function RegisterScreen() {
           placeholder="Lieu de naissance"
           value={formData.lieuNaissance}
           onChangeText={(value) => updateField('lieuNaissance', value)}
+          accessibilityLabel="Lieu de naissance"
         />
 
         <TextInput
@@ -203,12 +216,16 @@ export default function RegisterScreen() {
           value={formData.adresse}
           onChangeText={(value) => updateField('adresse', value)}
           multiline
+          accessibilityLabel="Adresse postale"
         />
 
         <TouchableOpacity
           style={[styles.button, loading && styles.buttonDisabled]}
           onPress={handleRegister}
           disabled={loading}
+          accessibilityRole="button"
+          accessibilityLabel="Créer mon compte"
+          accessibilityState={{ disabled: loading, busy: loading }}
         >
           <Text style={styles.buttonText}>
             {loading ? 'Création...' : 'Créer mon compte'}
@@ -218,6 +235,8 @@ export default function RegisterScreen() {
         <TouchableOpacity
           style={styles.linkButton}
           onPress={() => router.push('/(auth)/login')}
+          accessibilityRole="link"
+          accessibilityLabel="Déjà un compte ? Se connecter"
         >
           <Text style={styles.linkText}>Déjà un compte ? Se connecter</Text>
         </TouchableOpacity>

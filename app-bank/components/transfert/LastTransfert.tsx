@@ -28,7 +28,11 @@ function TransactionItem({ transaction, accounts, beneficiaires }: { transaction
     const destinataire = getDestinataire(transaction, accounts, beneficiaires)
 
      return (
-        <View style={styles.transactionItem}>
+        <View
+            style={styles.transactionItem}
+            accessible
+            accessibilityLabel={`${destinataire}, ${transaction.libelle}, ${transaction.montant} euros, le ${formatDate(transaction.dateTransaction)}`}
+        >
             <View style={styles.avatar}>
                 <Text style={styles.initial}>
                     {destinataire.charAt(0).toUpperCase()}

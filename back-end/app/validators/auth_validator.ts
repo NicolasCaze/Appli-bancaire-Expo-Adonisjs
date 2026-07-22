@@ -19,7 +19,11 @@ export const createUserValidator = vine.compile(
     firstname: vine.string().trim().minLength(2),
     lastname: vine.string().trim().minLength(2),
     email: vine.string().email().trim(),
-    password: vine.string().minLength(8).maxLength(100),
+    password: vine
+      .string()
+      .minLength(8)
+      .maxLength(100)
+      .regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).+$/),
     dateNaissance: vine.date(),
     lieuNaissance: vine.string().trim().minLength(2),
     adresse: vine.string().trim().minLength(5)

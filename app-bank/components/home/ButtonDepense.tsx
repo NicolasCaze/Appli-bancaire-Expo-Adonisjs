@@ -11,10 +11,15 @@ export default function ButtonDepense({
 }: ButtonProps) {
     return (
         <View style={styles.container}>
-            <Pressable onPress={onPress} style={({ pressed }) => [
-                styles.pressable,
-                pressed && styles.pressed
-            ]}>
+            <Pressable
+                onPress={onPress}
+                style={({ pressed }) => [
+                    styles.pressable,
+                    pressed && styles.pressed
+                ]}
+                accessibilityRole="button"
+                accessibilityLabel={label}
+            >
                 <Text style={styles.label}>{label}</Text>
             </Pressable>
         </View>

@@ -1,70 +1,65 @@
 import { useState } from 'react'
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from 'react-native'
 import { router } from 'expo-router'
-import AuthService from '@/services/authService'
+import { useAuth } from '@/contexts/AuthContext'
 import BiometricAuth from '@/services/biometricAuth'
 import SecureStorage from '@/services/secureStorage'
 
 export default function LoginScreen() {
+  const { login } = useAuth()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
-  const [loading, setLoading] = useState(false)
+  const [submitting, setSubmitting] = useState(false)
 
-  /**
-   * Se connecter avec email et mot de passe
-   */
   const handleLogin = async () => {
     if (email.trim() === '' || password.trim() === '') {
       Alert.alert('Erreur', 'Veuillez remplir tous les champs')
       return
     }
 
-    setLoading(true)
-
+    setSubmitting(true)
     try {
-      await AuthService.login(email, password)
+      await login(email, password)
+      const biometricEnabled = await SecureStorage.isBiometricEnabled()
+      if (biometricEnabled) {
+        await SecureStorage.saveCredentials(email, password)
+      }
       router.replace('/(tabs)')
     } catch (error: any) {
       Alert.alert('Erreur', error.message || 'Impossible de se connecter')
     } finally {
-      setLoading(false)
+      setSubmitting(false)
     }
   }
 
-  /**
-   * Se connecter avec Face ID
-   */
   const handleBiometricLogin = async () => {
     try {
-      setLoading(true)
-      
-      const isBiometricEnabled = await SecureStorage.isBiometricEnabled()
+      setSubmitting(true)
 
+      const isBiometricEnabled = await SecureStorage.isBiometricEnabled()
       if (!isBiometricEnabled) {
         Alert.alert('Face ID désactivé', 'Vous devez activer Face ID lors de l\'inscription')
-        setLoading(false)
+        setSubmitting(false)
         return
       }
 
       const credentials = await SecureStorage.getCredentials()
-
       if (!credentials) {
         Alert.alert('Erreur', 'Aucun identifiant sauvegardé. Connectez-vous avec email/mot de passe.')
-        setLoading(false)
+        setSubmitting(false)
         return
       }
 
       const success = await BiometricAuth.authenticate('Connectez-vous avec Face ID')
-
       if (success) {
-        await AuthService.login(credentials.email, credentials.password)
+        await login(credentials.email, credentials.password)
         router.replace('/(tabs)')
       } else {
-        setLoading(false)
+        setSubmitting(false)
       }
     } catch (error: any) {
       Alert.alert('Erreur', error.message || 'Authentification échouée')
-      setLoading(false)
+      setSubmitting(false)
     }
   }
 
@@ -80,6 +75,7 @@ export default function LoginScreen() {
           onChangeText={setEmail}
           keyboardType="email-address"
           autoCapitalize="none"
+          accessibilityLabel="Adresse email"
         />
 
         <TextInput
@@ -88,21 +84,27 @@ export default function LoginScreen() {
           value={password}
           onChangeText={setPassword}
           secureTextEntry
+          accessibilityLabel="Mot de passe"
         />
 
         <TouchableOpacity
-          style={[styles.button, loading && styles.buttonDisabled]}
+          style={[styles.button, submitting && styles.buttonDisabled]}
           onPress={handleLogin}
-          disabled={loading}
+          disabled={submitting}
+          accessibilityRole="button"
+          accessibilityLabel="Se connecter"
+          accessibilityState={{ disabled: submitting, busy: submitting }}
         >
           <Text style={styles.buttonText}>
-            {loading ? 'Connexion...' : 'Se connecter'}
+            {submitting ? 'Connexion...' : 'Se connecter'}
           </Text>
         </TouchableOpacity>
 
         <TouchableOpacity
           style={styles.biometricButton}
           onPress={handleBiometricLogin}
+          accessibilityRole="button"
+          accessibilityLabel="Se connecter avec Face ID"
         >
           <Text style={styles.biometricText}>Se connecter avec Face ID</Text>
         </TouchableOpacity>
@@ -110,6 +112,8 @@ export default function LoginScreen() {
         <TouchableOpacity
           style={styles.linkButton}
           onPress={() => router.push('/(auth)/register')}
+          accessibilityRole="link"
+          accessibilityLabel="Pas encore de compte ? S'inscrire"
         >
           <Text style={styles.linkText}>Pas encore de compte ? S'inscrire</Text>
         </TouchableOpacity>
