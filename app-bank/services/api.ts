@@ -8,7 +8,7 @@ import type { RefreshResponse } from '@/types/auth'
  * Centralise l'URL de base, l'injection du token et le refresh automatique
  * pour éviter d'avoir à dupliquer cette logique dans chaque service.
  */
-export const API_URL = 'http://192.168.1.64:3333'
+export const API_URL = process.env.EXPO_PUBLIC_API_URL || 'http://192.168.1.64:3333'
 
 const api: AxiosInstance = axios.create({
   baseURL: API_URL,

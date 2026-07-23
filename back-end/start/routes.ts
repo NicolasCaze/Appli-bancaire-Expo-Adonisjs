@@ -7,10 +7,20 @@
 |
 */
 import router from '@adonisjs/core/services/router'
+import { prisma } from '../lib/prisma.js'
 
 router.get('/', async () => {
   return {
     hello: 'world',
+  }
+})
+
+router.get('/health', async ({ response }) => {
+  try {
+    await prisma.$queryRaw`SELECT 1`
+    return response.status(200).json({ status: 'ok', database: 'connected' })
+  } catch {
+    return response.status(503).json({ status: 'error', database: 'unreachable' })
   }
 })
 

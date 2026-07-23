@@ -1,0 +1,17 @@
+services:
+  postgres:
+    image: postgres:16
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: finygo
+      POSTGRES_PASSWORD: finygo
+      POSTGRES_DB: finygo
+    ports:
+      # Port hôte 5433 (et non 5432) pour éviter tout conflit avec un
+      # PostgreSQL déjà installé nativement sur la machine
+      - "5433:5432"
+    volumes:
+      - finygo_pgdata:/var/lib/postgresql/data
+
+volumes:
+  finygo_pgdata:
