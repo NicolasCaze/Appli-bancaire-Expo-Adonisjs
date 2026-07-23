@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, ScrollView } from 'react-native'
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, ScrollView, KeyboardAvoidingView, Platform } from 'react-native'
 import { router, useLocalSearchParams } from 'expo-router'
 import { LinearGradient } from 'expo-linear-gradient'
 import { SafeAreaView } from 'react-native-safe-area-context'
@@ -64,6 +64,11 @@ export default function TransferAccountScreen() {
             style={{ flex: 1 }}
         >
             <SafeAreaView style={styles.container}>
+              <KeyboardAvoidingView
+                style={{ flex: 1 }}
+                behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+                keyboardVerticalOffset={Platform.OS === 'ios' ? 60 : 0}
+              >
                 <ScrollView contentContainerStyle={styles.content}>
                     <BackHeader title="Virement vers un de mes comptes" />
 
@@ -129,6 +134,7 @@ export default function TransferAccountScreen() {
                         <Text style={styles.buttonText}>{loading ? 'Envoi...' : 'Valider le virement'}</Text>
                     </TouchableOpacity>
                 </ScrollView>
+              </KeyboardAvoidingView>
             </SafeAreaView>
         </LinearGradient>
     )

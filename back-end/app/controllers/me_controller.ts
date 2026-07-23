@@ -58,25 +58,4 @@ export default class MeController {
             return response.status(400).json({ message: error.message })
         }
     }
-
-    public async getSessions({ user, response }: HttpContext) {
-        try {
-            const sessions = await this.meService.getSessions(user!.userId)
-            return response.status(200).json(sessions)
-        } catch (error: any) {
-            return response.status(500).json({ message: error.message })
-        }
-    }
-
-    public async revokeSession({ user, params, response }: HttpContext) {
-        try {
-            await this.meService.revokeSession(user!.userId, Number(params.id))
-            return response.status(200).json({ message: 'Session révoquée' })
-        } catch (error: any) {
-            if (error.message === 'Session introuvable') {
-                return response.status(404).json({ message: error.message })
-            }
-            return response.status(403).json({ message: error.message })
-        }
-    }
 }

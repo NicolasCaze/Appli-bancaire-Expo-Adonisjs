@@ -48,15 +48,6 @@ export default function profilePage() {
             >
                 <Text style={styles.menuText}>Mon budget mensuel</Text>
             </TouchableOpacity>
-            <TouchableOpacity
-                style={styles.menuItem}
-                onPress={() => router.push('/(profile)/sessions')}
-                accessibilityRole="button"
-                accessibilityLabel="Sessions actives"
-                accessibilityHint="Voir et déconnecter les appareils connectés à votre compte"
-            >
-                <Text style={styles.menuText}>Sessions actives</Text>
-            </TouchableOpacity>
         </View>
         <TouchableOpacity
             style={styles.logoutButton}

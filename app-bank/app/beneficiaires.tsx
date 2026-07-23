@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, FlatList } from 'react-native'
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, FlatList, KeyboardAvoidingView, Platform } from 'react-native'
 import { LinearGradient } from 'expo-linear-gradient'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { Colors } from '@/constants/Colors'
@@ -61,6 +61,11 @@ export default function BeneficiairesScreen() {
             style={{ flex: 1 }}
         >
             <SafeAreaView style={styles.container}>
+              <KeyboardAvoidingView
+                style={{ flex: 1 }}
+                behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+                keyboardVerticalOffset={Platform.OS === 'ios' ? 60 : 0}
+              >
                 <BackHeader title="Mes bénéficiaires" />
 
                 <FlatList
@@ -121,6 +126,7 @@ export default function BeneficiairesScreen() {
                         <Text style={styles.buttonText}>{loading ? 'Ajout...' : 'Ajouter le bénéficiaire'}</Text>
                     </TouchableOpacity>
                 </View>
+              </KeyboardAvoidingView>
             </SafeAreaView>
         </LinearGradient>
     )

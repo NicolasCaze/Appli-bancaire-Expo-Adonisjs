@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, ScrollView } from 'react-native'
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, ScrollView, KeyboardAvoidingView, Platform } from 'react-native'
 import { router } from 'expo-router'
 import { LinearGradient } from 'expo-linear-gradient'
 import { SafeAreaView } from 'react-native-safe-area-context'
@@ -102,6 +102,11 @@ export default function TransferBeneficiaireScreen() {
             style={{ flex: 1 }}
         >
             <SafeAreaView style={styles.container}>
+              <KeyboardAvoidingView
+                style={{ flex: 1 }}
+                behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+                keyboardVerticalOffset={Platform.OS === 'ios' ? 60 : 0}
+              >
                 <ScrollView contentContainerStyle={styles.content}>
                     <BackHeader title="Virement vers un bénéficiaire" />
 
@@ -163,6 +168,7 @@ export default function TransferBeneficiaireScreen() {
                         <Text style={styles.buttonText}>{loading ? 'Envoi...' : 'Valider le virement'}</Text>
                     </TouchableOpacity>
                 </ScrollView>
+              </KeyboardAvoidingView>
             </SafeAreaView>
         </LinearGradient>
     )

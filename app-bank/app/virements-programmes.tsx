@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, FlatList } from 'react-native'
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, FlatList, KeyboardAvoidingView, Platform } from 'react-native'
 import { router } from 'expo-router'
 import { LinearGradient } from 'expo-linear-gradient'
 import { SafeAreaView } from 'react-native-safe-area-context'
@@ -162,6 +162,11 @@ export default function VirementsProgrammesScreen() {
             style={{ flex: 1 }}
         >
             <SafeAreaView style={styles.container}>
+              <KeyboardAvoidingView
+                style={{ flex: 1 }}
+                behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+                keyboardVerticalOffset={0}
+              >
                 <FlatList
                     data={virements}
                     keyExtractor={(item) => item.id.toString()}
@@ -287,6 +292,7 @@ export default function VirementsProgrammesScreen() {
                         </View>
                     }
                 />
+              </KeyboardAvoidingView>
             </SafeAreaView>
         </LinearGradient>
     )

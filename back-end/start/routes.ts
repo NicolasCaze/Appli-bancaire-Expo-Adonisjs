@@ -40,8 +40,6 @@ router.delete('/virements-programmes/:id', [VirementsProgrammesController, 'annu
 router.get('/me', [MeController, 'getProfile']).use(middleware.auth())
 router.patch('/me/email', [MeController, 'updateEmail']).use(middleware.auth())
 router.patch('/me/password', [MeController, 'updatePassword']).use(middleware.auth())
-router.get('/me/sessions', [MeController, 'getSessions']).use(middleware.auth())
-router.delete('/me/sessions/:id', [MeController, 'revokeSession']).use(middleware.auth())
 router.post('/create_users', [UsersController, 'createUsers'])
 // Routes d'authentification
 router.post('/auth/login', [AuthController, 'login']).use(middleware.rateLimit())

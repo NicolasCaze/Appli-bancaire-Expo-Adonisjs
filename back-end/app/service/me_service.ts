@@ -55,36 +55,4 @@ export class MeService {
             data: { password: hashed }
         })
     }
-
-    public async getSessions(userId: number) {
-        const sessions = await prisma.refreshToken.findMany({
-            where: {
-                userId,
-                revokedAt: null,
-                expireAt: { gte: new Date() }
-            },
-            select: {
-                id: true,
-                deviceInfo: true,
-                ipAddress: true,
-                createdAt: true,
-                lastUsedAt: true
-            },
-            orderBy: { lastUsedAt: 'desc' }
-        })
-        return sessions
-    }
-
-    public async revokeSession(userId: number, sessionId: number) {
-        const session = await prisma.refreshToken.findUnique({ where: { id: sessionId } })
-        if (!session) throw new Error('Session introuvable')
-        if (session.userId !== userId) {
-            throw new Error("Cette session n'appartient pas à votre compte")
-        }
-
-        await prisma.refreshToken.update({
-            where: { id: sessionId },
-            data: { revokedAt: new Date() }
-        })
-    }
 }

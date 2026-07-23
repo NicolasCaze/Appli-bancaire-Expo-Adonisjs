@@ -5,6 +5,26 @@ Format : [Keep a Changelog](https://keepachangelog.com/fr/1.0.0/) — Versioning
 
 ---
 
+## [1.3.0] — 2026-07-22
+
+### Ajouté
+- Écran profil complet : modification de l'email et du mot de passe, consultation des coordonnées bancaires
+
+### Sécurité
+- Politique de mot de passe renforcée : 8 caractères minimum, majuscule, chiffre et caractère spécial (inscription et changement de mot de passe), appliquée côté client et serveur
+- Correction d'une fuite mémoire dans le rate limiter (`rate_limit_middleware`) : purge périodique des entrées IP expirées
+- Correction d'un bug de désérialisation de la réponse `/auth/refresh` côté client (l'intercepteur Axios lisait une racine de réponse incorrecte, provoquant une perte de session après 15 minutes)
+- Limite de sécurité documentée : rate limiting appliqué par IP et non par compte (`docs/SECURITE.md`)
+
+### Accessibilité
+- Ajout des `accessibilityLabel`/`accessibilityRole` manquants sur les écrans de connexion et d'inscription
+- Annonce vocale des montants et soldes sur les composants restants (`AccountBalance`, `Patrimoine`, `LastTransfert`)
+
+### Documentation
+- Mise à jour de `docs/SECURITE.md` et `docs/CAHIER_RECETTES.md`
+
+---
+
 ## [1.2.0] — 2026-07-02
 
 ### Ajouté
@@ -38,7 +58,7 @@ Format : [Keep a Changelog](https://keepachangelog.com/fr/1.0.0/) — Versioning
 ## [1.1.0] — 2026-06-20
 
 ### Ajouté
-- Graphiques de dépenses par catégorie (`DepenseGraphique`)
+- Graphique des dépenses journalières par compte (`DepenseGraphique`)
 - Vue patrimoine multi-comptes (`Patrimoine`)
 - Historique des derniers paiements (`LastPayments`)
 - Récupération des données utilisateur au démarrage (comptes, transactions, paiements)
@@ -49,7 +69,7 @@ Format : [Keep a Changelog](https://keepachangelog.com/fr/1.0.0/) — Versioning
 
 ---
 
-## [1.0.0] — 2025-12-11
+## [1.0.0] — 2026-01-12
 
 ### Ajouté
 - Authentification JWT : inscription, connexion, déconnexion, refresh token automatique

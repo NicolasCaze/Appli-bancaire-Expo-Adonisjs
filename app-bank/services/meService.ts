@@ -13,14 +13,6 @@ export type UserProfile = {
     rib: string | null
 }
 
-export type Session = {
-    id: number
-    deviceInfo: string | null
-    ipAddress: string | null
-    createdAt: string
-    lastUsedAt: string
-}
-
 const meService = {
     async getProfile(): Promise<UserProfile> {
         try {
@@ -58,32 +50,6 @@ const meService = {
             }
             const msg = error.response?.data?.message
             throw new Error(msg ?? 'Erreur lors de la mise à jour du mot de passe')
-        }
-    },
-
-    async getSessions(): Promise<Session[]> {
-        try {
-            const res = await api.get('/me/sessions')
-            return res.data
-        } catch (error: any) {
-            if (sessionManager.isSessionExpiredError(error)) {
-                await sessionManager.handleSessionExpired()
-                throw new Error('Votre session a expiré')
-            }
-            throw new Error('Erreur lors de la récupération des sessions')
-        }
-    },
-
-    async revokeSession(id: number): Promise<void> {
-        try {
-            await api.delete(`/me/sessions/${id}`)
-        } catch (error: any) {
-            if (sessionManager.isSessionExpiredError(error)) {
-                await sessionManager.handleSessionExpired()
-                throw new Error('Votre session a expiré')
-            }
-            const msg = error.response?.data?.message
-            throw new Error(msg ?? 'Erreur lors de la révocation de la session')
         }
     },
 }

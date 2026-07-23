@@ -10,6 +10,7 @@ import { SafeAreaView } from 'react-native-safe-area-context'
 import { Colors } from '@/constants/Colors'
 import BackHeader from '@/components/ui/BackHeader'
 import meService, { UserProfile } from '@/services/meService'
+import { useAuth } from '@/contexts/AuthContext'
 
 function InfoRow({ label, value }: { label: string; value: string }) {
     return (
@@ -21,6 +22,7 @@ function InfoRow({ label, value }: { label: string; value: string }) {
 }
 
 export default function PersonalInfoScreen() {
+    const { refreshUser } = useAuth()
     const [profile, setProfile] = useState<UserProfile | null>(null)
     const [loading, setLoading] = useState(true)
 
@@ -39,6 +41,7 @@ export default function PersonalInfoScreen() {
             .then(setProfile)
             .catch(() => Alert.alert('Erreur', 'Impossible de charger le profil'))
             .finally(() => setLoading(false))
+        refreshUser()
     }, [])
 
     const handleSaveEmail = async () => {

@@ -21,7 +21,7 @@ Le workflow est découpé en deux jobs parallèles, l'un pour le backend et l'au
 | Lint (ESLint) | `npm run lint` | oui |
 | Tests unitaires (Vitest) | `npm test` | oui |
 | Vérification TypeScript | `npm run typecheck` | oui |
-| Audit des dépendances | `npm audit --audit-level=critical` | non (|| true) |
+| Audit des dépendances | `npm audit --audit-level=critical` | non (`\|\| true`) |
 
 Le pipeline **échoue** si le lint, les tests ou le typecheck retournent une erreur. L'audit est exécuté à titre informatif mais ne bloque pas le pipeline.
 

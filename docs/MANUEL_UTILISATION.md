@@ -35,7 +35,7 @@ L'écran d'accueil affiche :
 - **Solde** de votre compte bancaire principal
 - **Swipe horizontal** entre vos comptes (bancaire, épargne, pocket)
 - **Patrimoine total** (somme de tous les comptes)
-- **Graphique des dépenses** par catégorie sur les 30 derniers jours
+- **Graphique des dépenses** journalières du compte affiché, sur le mois en cours
 - **Derniers paiements** reçus
 
 ### 2.1 Ouvrir un nouveau compte

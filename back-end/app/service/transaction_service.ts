@@ -9,7 +9,8 @@ export class transactionsService {
                     { compteSource: { userId: userId } },
                     { compteDestination: { userId: userId } }
                 ]
-            }
+            },
+            orderBy: { dateTransaction: 'desc' }
         })
         return transactions
     }

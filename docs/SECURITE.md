@@ -97,7 +97,6 @@ Ce document recense chaque faille du OWASP Top 10 et la mesure correspondante mi
 - Access token de courte durée (15 min) ; expiration gérée côté backend.
 - Refresh token révocable : la déconnexion (`POST /auth/logout`) révoque le token en base (`revokedAt = now()`). Rotation à chaque refresh avec détection de réutilisation (un refresh token déjà consommé déclenche la révocation de toutes les sessions actives de l'utilisateur).
 - Authentification biométrique (Face ID / Touch ID) disponible comme second facteur rapide côté mobile.
-- **Gestion des sessions actives** : `GET /me/sessions` liste les appareils connectés (device, IP, dernière utilisation) à partir des `RefreshToken` non révoqués ; `DELETE /me/sessions/:id` permet à l'utilisateur de révoquer une session à distance (ex : appareil perdu ou volé).
 
 **Limite identifiée :** Le rate limiting est appliqué par IP, pas par compte. Un attaquant distribuant ses tentatives sur plusieurs IP contournerait la limite actuelle. Un verrouillage de compte après N échecs (indépendant de l'IP) est une amélioration V2 possible, à mettre en balance avec le risque de déni de service par verrouillage volontaire d'un compte tiers (attaque bien connue sur ce type de mécanisme).
 
@@ -145,7 +144,7 @@ Ce document recense chaque faille du OWASP Top 10 et la mesure correspondante mi
 | A04 | Insecure Design | ✅ Couvert | Virements atomiques, pas de découvert |
 | A05 | Security Misconfiguration | ✅ Couvert | Headers HTTP, exception handler |
 | A06 | Vulnerable Components | ✅ Couvert | `npm audit` en CI |
-| A07 | Authentication Failures | ✅ Couvert (⚠️ rate limit par IP uniquement) | Rate limiting, politique de mot de passe, refresh token rotatif révocable, sessions actives |
+| A07 | Authentication Failures | ✅ Couvert (⚠️ rate limit par IP uniquement) | Rate limiting, politique de mot de passe, refresh token rotatif révocable |
 | A08 | Integrity Failures | ✅ Couvert | `npm audit`, `package-lock.json` versionné |
 | A09 | Logging & Monitoring | ⚠️ Partiel | Logger AdonisJS, pas d'agrégation centralisée |
 | A10 | SSRF | N/A | Aucun appel HTTP sortant en V1 |

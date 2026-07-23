@@ -2,6 +2,7 @@ import { createContext, useContext, useEffect, useState } from "react";
 import { Account, User, Payment, Transaction, Beneficiaire } from "../types/auth";
 import secureStorage from "@/services/secureStorage";
 import authService from "@/services/authService";
+import meService from "@/services/meService";
 import { router } from "expo-router";
 import accountService from "@/services/accountService";
 import paymentService from "@/services/paymentService";
@@ -19,6 +20,7 @@ type AuthContextType = {
   login: (email: string, password: string) => Promise<void>
   logout: () => Promise<void>
   loadUser: () => Promise<void>
+  refreshUser: () => Promise<void>
   loadAccounts: () => Promise<void>
   loadPayments: () => Promise<void>
   loadTransactions: () => Promise<void>
@@ -46,6 +48,22 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
             await loadBeneficiaires()
         }
         setLoading(false)
+    }
+
+    const refreshUser = async () => {
+        try {
+            const profile = await meService.getProfile()
+            const refreshed = {
+                id: profile.id,
+                email: profile.email,
+                firstname: profile.firstname,
+                lastname: profile.lastname,
+            }
+            setUser(refreshed)
+            await secureStorage.saveUser(refreshed)
+        } catch (error) {
+            console.error(error)
+        }
     }
 
     const loadAccounts = async () => {
@@ -129,7 +147,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     }, [])
 
     return (
-        <AuthContext.Provider value={{ user, loading, accounts, payments, transactions, beneficiaires, login, logout, loadUser, loadAccounts, loadPayments, loadTransactions, loadBeneficiaires }}>
+        <AuthContext.Provider value={{ user, loading, accounts, payments, transactions, beneficiaires, login, logout, loadUser, refreshUser, loadAccounts, loadPayments, loadTransactions, loadBeneficiaires }}>
             {children}
         </AuthContext.Provider>
     )

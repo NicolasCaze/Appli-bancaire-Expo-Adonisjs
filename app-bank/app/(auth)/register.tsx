@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, ScrollView } from 'react-native'
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, ScrollView, KeyboardAvoidingView, Platform } from 'react-native'
 import { router } from 'expo-router'
 import BiometricAuth from '@/services/biometricAuth'
 import SecureStorage from '@/services/secureStorage'
@@ -143,9 +143,14 @@ export default function RegisterScreen() {
   }
 
   return (
-    <ScrollView style={styles.container}>
-      <View style={styles.content}>
-        <Text style={styles.title}>Créer un compte</Text>
+    <KeyboardAvoidingView
+      style={{ flex: 1 }}
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      keyboardVerticalOffset={0}
+    >
+      <ScrollView style={styles.container} keyboardShouldPersistTaps="handled">
+        <View style={styles.content}>
+          <Text style={styles.title}>Créer un compte</Text>
 
         <TextInput
           style={styles.input}
@@ -240,8 +245,9 @@ export default function RegisterScreen() {
         >
           <Text style={styles.linkText}>Déjà un compte ? Se connecter</Text>
         </TouchableOpacity>
-      </View>
-    </ScrollView>
+        </View>
+      </ScrollView>
+    </KeyboardAvoidingView>
   )
 }
 
