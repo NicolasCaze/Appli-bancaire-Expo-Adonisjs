@@ -1,5 +1,7 @@
 # Finygo
 
+> ⚠️ **Projet fictif à but pédagogique.** Finygo est une application bancaire **de démonstration**, réalisée dans le cadre d'un projet personnel / scolaire (certification "Expert en Développement Logiciel"). Elle **n'a jamais vocation à être mise en production** ni à traiter de fonds ou de données réelles. Certaines exigences réglementaires et de sécurité imposées à une véritable application bancaire (conformité DSP2/PCI-DSS, KYC, agrément ACPR, audit de sécurité externe, etc.) sont hors du périmètre de ce projet, qui se concentre sur la démonstration de compétences techniques (architecture, sécurité applicative de base, accessibilité, tests, CI/CD).
+
 Application bancaire mobile (néobanque) développée avec **React Native / Expo** (frontend) et **AdonisJS 6 / Prisma / PostgreSQL** (backend).
 
 Gestion multi-comptes (Bancaire, Épargne, Pocket), virements internes et externes, virements programmés, bénéficiaires, budget mensuel avec alertes, authentification par mot de passe ou biométrie (Face ID / Touch ID).
