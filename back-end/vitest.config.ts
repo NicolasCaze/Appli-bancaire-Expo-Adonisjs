@@ -7,12 +7,8 @@ export default defineConfig({
     include: ['tests/unit/**/*.test.ts'],
     coverage: {
       provider: 'v8',
-      include: [
-        'app/service/transaction_service.ts',
-        'app/service/account_service.ts',
-        'app/service/beneficiaire_service.ts'
-      ],
-      reporter: ['text', 'lcov']
-    }
-  }
+      include: ['app/service/**/*.ts', 'app/middleware/**/*.ts'],
+      reporter: ['text', 'lcov'],
+    },
+  },
 })

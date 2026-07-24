@@ -34,6 +34,8 @@ Le pipeline **échoue** si le lint, les tests ou le typecheck retournent une err
 | Checkout du code | `actions/checkout@v4` | oui |
 | Installation des dépendances | `npm ci` | oui |
 | Lint (ESLint) | `npm run lint` | oui |
+| Tests unitaires (Jest / jest-expo) | `npm test` | oui |
+| Vérification TypeScript | `npm run typecheck` | oui |
 
 ---
 
@@ -51,7 +53,9 @@ Push / Pull Request
         │
         └──► [frontend]
                 ├── npm ci
-                └── eslint .              ← échoue si erreur
+                ├── eslint .              ← échoue si erreur
+                ├── jest                  ← échoue si test KO
+                └── tsc --noEmit          ← échoue si type error
 ```
 
 Les deux jobs s'exécutent en **parallèle**. Un échec sur l'un n'interrompt pas l'autre.

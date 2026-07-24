@@ -70,7 +70,7 @@ Ce document recense chaque faille du OWASP Top 10 et la mesure correspondante mi
   - `X-Content-Type-Options: nosniff`
   - `X-Frame-Options: DENY`
   - `X-XSS-Protection: 1; mode=block`
-  - `Referrer-Policy: strict-origin-when-cross-origin`
+  - `Referrer-Policy: no-referrer`
   - `Permissions-Policy: camera=(), microphone=(), geolocation=()`
 - **Exception handler** (`app/exceptions/handler.ts`) : en production, les erreurs 500 retournent uniquement `{ message: 'Une erreur interne est survenue' }` — aucune stack trace ni détail SQL n'est exposé. Les contrôleurs (`users`, `auth`, `me`) suivent la même règle : le détail de l'exception est loggé côté serveur (`logger.error`) mais jamais renvoyé dans la réponse JSON.
 - CORS restreint à une liste explicite d'origines (`config/cors.ts`) plutôt que de refléter n'importe quelle origine : l'app mobile native n'envoie pas d'en-tête `Origin` et n'est donc pas concernée ; seules les origines de développement (Expo web local) et celles ajoutées via la variable d'environnement `ALLOWED_ORIGINS` sont acceptées.

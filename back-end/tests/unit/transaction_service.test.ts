@@ -6,14 +6,14 @@ const prismaMock = vi.hoisted(() => {
     account: {
       findUnique: vi.fn(),
       updateMany: vi.fn(),
-      update: vi.fn()
+      update: vi.fn(),
     },
     beneficiaire: {
-      findUnique: vi.fn()
+      findUnique: vi.fn(),
     },
     transaction: {
-      create: vi.fn()
-    }
+      create: vi.fn(),
+    },
   }
 
   return {
@@ -21,8 +21,8 @@ const prismaMock = vi.hoisted(() => {
       $transaction: vi.fn(),
       account: { findUnique: vi.fn(), findMany: vi.fn() },
       transaction: { findMany: vi.fn() },
-      _tx: tx
-    }
+      _tx: tx,
+    },
   }
 })
 
@@ -52,49 +52,68 @@ beforeEach(() => {
 describe('createTransactionService — virement interne', () => {
   test('cas nominal : solde source débité ET solde cible crédité', async () => {
     const tx = setupTx()
-    tx.account.findUnique.mockResolvedValueOnce(compteSource).mockResolvedValueOnce(compteDestination)
+    tx.account.findUnique
+      .mockResolvedValueOnce(compteSource)
+      .mockResolvedValueOnce(compteDestination)
     tx.account.updateMany.mockResolvedValue({ count: 1 })
     tx.account.update.mockResolvedValue({})
-    tx.transaction.create.mockResolvedValue({ id: 1, type: 'INTERNAL', statut: 'EFFECTUEE', montant: 200 })
+    tx.transaction.create.mockResolvedValue({
+      id: 1,
+      type: 'INTERNAL',
+      statut: 'EFFECTUEE',
+      montant: 200,
+    })
 
     const result = await service.createTransactionService(10, 1, 2, 200, 'Virement')
 
     expect(tx.account.updateMany).toHaveBeenCalledWith({
       where: { id: 1, solde: { gte: 200 } },
-      data: { solde: { decrement: 200 } }
+      data: { solde: { decrement: 200 } },
     })
     expect(tx.account.update).toHaveBeenCalledWith({
       where: { id: 2 },
-      data: { solde: { increment: 200 } }
+      data: { solde: { increment: 200 } },
     })
     expect(result).toMatchObject({ type: 'INTERNAL', statut: 'EFFECTUEE' })
   })
 
   test('atomicité : si le crédit échoue, la transaction est annulée (rollback)', async () => {
     const tx = setupTx()
-    tx.account.findUnique.mockResolvedValueOnce(compteSource).mockResolvedValueOnce(compteDestination)
+    tx.account.findUnique
+      .mockResolvedValueOnce(compteSource)
+      .mockResolvedValueOnce(compteDestination)
     tx.account.updateMany.mockResolvedValue({ count: 1 })
     tx.account.update.mockRejectedValue(new Error('DB crash'))
 
-    await expect(service.createTransactionService(10, 1, 2, 200, 'Virement')).rejects.toThrow('DB crash')
+    await expect(service.createTransactionService(10, 1, 2, 200, 'Virement')).rejects.toThrow(
+      'DB crash'
+    )
   })
 
   test('montant négatif → rejet avant toute modification', async () => {
-    await expect(service.createTransactionService(10, 1, 2, -50, 'Virement')).rejects.toThrow('positif')
+    await expect(service.createTransactionService(10, 1, 2, -50, 'Virement')).rejects.toThrow(
+      'positif'
+    )
     expect(prismaMock.prisma.$transaction).not.toHaveBeenCalled()
   })
 
   test('montant nul → rejet avant toute modification', async () => {
-    await expect(service.createTransactionService(10, 1, 2, 0, 'Virement')).rejects.toThrow('positif')
+    await expect(service.createTransactionService(10, 1, 2, 0, 'Virement')).rejects.toThrow(
+      'positif'
+    )
     expect(prismaMock.prisma.$transaction).not.toHaveBeenCalled()
   })
 
   test('solde insuffisant → rejet, aucun solde modifié', async () => {
     const tx = setupTx()
-    tx.account.findUnique.mockResolvedValueOnce(compteSource).mockResolvedValueOnce(compteDestination)
+    tx.account.findUnique
+      .mockResolvedValueOnce(compteSource)
+      .mockResolvedValueOnce(compteDestination)
     tx.account.updateMany.mockResolvedValue({ count: 0 }) // condition solde >= montant non satisfaite
 
-    await expect(service.createTransactionService(10, 1, 2, 1000, 'Virement')).rejects.toThrow('insuffisant')
+    await expect(service.createTransactionService(10, 1, 2, 1000, 'Virement')).rejects.toThrow(
+      'insuffisant'
+    )
     expect(tx.account.update).not.toHaveBeenCalled()
   })
 
@@ -102,7 +121,9 @@ describe('createTransactionService — virement interne', () => {
     const tx = setupTx()
     tx.account.findUnique.mockResolvedValueOnce(null)
 
-    await expect(service.createTransactionService(10, 999, 2, 100, 'Virement')).rejects.toThrow('introuvable')
+    await expect(service.createTransactionService(10, 999, 2, 100, 'Virement')).rejects.toThrow(
+      'introuvable'
+    )
     expect(tx.account.updateMany).not.toHaveBeenCalled()
   })
 
@@ -111,11 +132,15 @@ describe('createTransactionService — virement interne', () => {
     tx.account.findUnique.mockResolvedValueOnce(compteSource).mockResolvedValueOnce(null)
     tx.account.updateMany.mockResolvedValue({ count: 1 })
 
-    await expect(service.createTransactionService(10, 1, 999, 100, 'Virement')).rejects.toThrow('introuvable')
+    await expect(service.createTransactionService(10, 1, 999, 100, 'Virement')).rejects.toThrow(
+      'introuvable'
+    )
   })
 
   test('virement vers soi-même → rejet', async () => {
-    await expect(service.createTransactionService(10, 1, 1, 100, 'Virement')).rejects.toThrow('différents')
+    await expect(service.createTransactionService(10, 1, 1, 100, 'Virement')).rejects.toThrow(
+      'différents'
+    )
     expect(prismaMock.prisma.$transaction).not.toHaveBeenCalled()
   })
 
@@ -131,11 +156,25 @@ describe('createTransactionService — virement interne', () => {
     expect(result).toMatchObject({ type: 'INTERNAL', statut: 'EFFECTUEE' })
   })
 
-  test('isolation utilisateur : virement depuis compte d\'un autre user → rejet 403', async () => {
+  test("isolation utilisateur : virement depuis compte d'un autre user → rejet 403", async () => {
     const tx = setupTx()
     tx.account.findUnique.mockResolvedValueOnce({ ...compteSource, userId: 99 })
 
-    await expect(service.createTransactionService(10, 1, 2, 100, 'Virement')).rejects.toThrow('autorisé')
+    await expect(service.createTransactionService(10, 1, 2, 100, 'Virement')).rejects.toThrow(
+      'autorisé'
+    )
+    expect(tx.account.updateMany).not.toHaveBeenCalled()
+  })
+
+  test("isolation utilisateur : virement vers le compte d'un autre user → rejet, aucun solde modifié", async () => {
+    const tx = setupTx()
+    tx.account.findUnique
+      .mockResolvedValueOnce(compteSource)
+      .mockResolvedValueOnce({ ...compteDestination, userId: 99 })
+
+    await expect(service.createTransactionService(10, 1, 2, 100, 'Virement')).rejects.toThrow(
+      'autorisé'
+    )
     expect(tx.account.updateMany).not.toHaveBeenCalled()
   })
 })
@@ -148,16 +187,23 @@ describe('createVirementBeneficiaireService — virement externe', () => {
     tx.account.findUnique.mockResolvedValueOnce(compteSource)
     tx.beneficiaire.findUnique.mockResolvedValueOnce(beneficiaire)
     tx.account.updateMany.mockResolvedValue({ count: 1 })
-    tx.transaction.create.mockResolvedValue({ id: 2, type: 'EXTERNAL', statut: 'EFFECTUEE', beneficiaireId: 5 })
+    tx.transaction.create.mockResolvedValue({
+      id: 2,
+      type: 'EXTERNAL',
+      statut: 'EFFECTUEE',
+      beneficiaireId: 5,
+    })
 
     const result = await service.createVirementBeneficiaireService(10, 1, 5, 150, 'Virement ext')
 
     expect(tx.account.updateMany).toHaveBeenCalledWith({
       where: { id: 1, solde: { gte: 150 } },
-      data: { solde: { decrement: 150 } }
+      data: { solde: { decrement: 150 } },
     })
     expect(tx.transaction.create).toHaveBeenCalledWith(
-      expect.objectContaining({ data: expect.objectContaining({ beneficiaireId: 5, type: 'EXTERNAL' }) })
+      expect.objectContaining({
+        data: expect.objectContaining({ beneficiaireId: 5, type: 'EXTERNAL' }),
+      })
     )
     expect(result).toMatchObject({ type: 'EXTERNAL', beneficiaireId: 5 })
   })
@@ -167,7 +213,9 @@ describe('createVirementBeneficiaireService — virement externe', () => {
     tx.account.findUnique.mockResolvedValueOnce(compteSource)
     tx.beneficiaire.findUnique.mockResolvedValueOnce(null)
 
-    await expect(service.createVirementBeneficiaireService(10, 1, 999, 100, 'Virement')).rejects.toThrow('introuvable')
+    await expect(
+      service.createVirementBeneficiaireService(10, 1, 999, 100, 'Virement')
+    ).rejects.toThrow('introuvable')
     expect(tx.account.updateMany).not.toHaveBeenCalled()
   })
 
@@ -176,7 +224,58 @@ describe('createVirementBeneficiaireService — virement externe', () => {
     tx.account.findUnique.mockResolvedValueOnce(compteSource)
     tx.beneficiaire.findUnique.mockResolvedValueOnce({ ...beneficiaire, userId: 99 })
 
-    await expect(service.createVirementBeneficiaireService(10, 1, 5, 100, 'Virement')).rejects.toThrow('appartient')
+    await expect(
+      service.createVirementBeneficiaireService(10, 1, 5, 100, 'Virement')
+    ).rejects.toThrow('appartient')
     expect(tx.account.updateMany).not.toHaveBeenCalled()
+  })
+
+  test('compte source introuvable → rejet', async () => {
+    const tx = setupTx()
+    tx.account.findUnique.mockResolvedValueOnce(null)
+
+    await expect(
+      service.createVirementBeneficiaireService(10, 999, 5, 100, 'Virement')
+    ).rejects.toThrow('introuvable')
+  })
+
+  test('isolation utilisateur : compte source appartenant à un autre user → rejet', async () => {
+    const tx = setupTx()
+    tx.account.findUnique.mockResolvedValueOnce({ ...compteSource, userId: 99 })
+
+    await expect(
+      service.createVirementBeneficiaireService(10, 1, 5, 100, 'Virement')
+    ).rejects.toThrow('autorisé')
+  })
+
+  test('compte source non BANCAIRE → rejet', async () => {
+    const tx = setupTx()
+    tx.account.findUnique.mockResolvedValueOnce({ ...compteSource, type: 'EPARGNE' })
+
+    await expect(
+      service.createVirementBeneficiaireService(10, 1, 5, 100, 'Virement')
+    ).rejects.toThrow('bancaire')
+  })
+
+  test('montant nul ou négatif → rejet avant toute modification', async () => {
+    await expect(
+      service.createVirementBeneficiaireService(10, 1, 5, 0, 'Virement')
+    ).rejects.toThrow('positif')
+    await expect(
+      service.createVirementBeneficiaireService(10, 1, 5, -10, 'Virement')
+    ).rejects.toThrow('positif')
+    expect(prismaMock.prisma.$transaction).not.toHaveBeenCalled()
+  })
+
+  test('solde insuffisant → rejet, aucune transaction créée', async () => {
+    const tx = setupTx()
+    tx.account.findUnique.mockResolvedValueOnce(compteSource)
+    tx.beneficiaire.findUnique.mockResolvedValueOnce(beneficiaire)
+    tx.account.updateMany.mockResolvedValue({ count: 0 })
+
+    await expect(
+      service.createVirementBeneficiaireService(10, 1, 5, 999, 'Virement')
+    ).rejects.toThrow('insuffisant')
+    expect(tx.transaction.create).not.toHaveBeenCalled()
   })
 })

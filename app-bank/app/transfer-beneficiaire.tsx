@@ -67,7 +67,7 @@ export default function TransferBeneficiaireScreen() {
             >
                 <SafeAreaView style={styles.container}>
                     <BackHeader title="Virement vers un bénéficiaire" />
-                    <Text style={styles.empty}>Vous devez d'abord ouvrir un compte bancaire pour effectuer un virement.</Text>
+                    <Text style={styles.empty}>Vous devez d&apos;abord ouvrir un compte bancaire pour effectuer un virement.</Text>
                 </SafeAreaView>
             </LinearGradient>
         )
@@ -81,7 +81,7 @@ export default function TransferBeneficiaireScreen() {
             >
                 <SafeAreaView style={styles.container}>
                     <BackHeader title="Virement vers un bénéficiaire" />
-                    <Text style={styles.empty}>Vous n'avez aucun bénéficiaire enregistré.</Text>
+                    <Text style={styles.empty}>Vous n&apos;avez aucun bénéficiaire enregistré.</Text>
                     <TouchableOpacity
                         style={styles.button}
                         onPress={() => router.push('/beneficiaires')}

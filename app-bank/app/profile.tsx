@@ -7,7 +7,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { router } from "expo-router";
 
 
-export default function profilePage() {
+export default function ProfilePage() {
     const { user, logout } = useAuth();
     return (
             <LinearGradient

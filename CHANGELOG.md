@@ -5,6 +5,22 @@ Format : [Keep a Changelog](https://keepachangelog.com/fr/1.0.0/) — Versioning
 
 ---
 
+## [1.5.0] — 2026-07-24
+
+### Qualité
+- Harnais de tests unitaires backend étendu à l'ensemble des services et middlewares métier : `auth_service`, `users_service`, `me_service`, `payment_service`, `virement_programme_service`, `auth_middleware`, `rate_limit_middleware`, `security_headers_middleware`, en complément des services déjà couverts (comptes, virements, bénéficiaires) — 89 tests, 93,8 % de couverture réelle sur `app/service` et `app/middleware`
+- Correction de `vitest.config.ts` : la couverture mesurait auparavant seulement 3 fichiers choisis manuellement (~87 % artificiel) au lieu de l'ensemble du code métier
+- Suppression de `login_service.ts`, service d'authentification legacy dupliqué et jamais branché à une route
+- Mise en place d'un tout premier harnais de tests unitaires côté frontend (`app-bank`) avec Jest + `jest-expo` : 125 tests couvrant l'ensemble des services (`authService`, `api` avec ses intercepteurs de refresh token, `secureStorage`, `biometricAuth`, `budgetNotificationService`, et tous les services CRUD) et utilitaires (`sessionManager`, `dateFormatter`) — 99,3 % de couverture sur `services/` et `utils/`
+- Ajout des scripts `npm test`, `npm run test:coverage` et `npm run typecheck` côté frontend
+- Correction des erreurs ESLint bloquantes préexistantes sur le frontend (apostrophes non échappées, nom de composant non conforme) qui empêchaient `npm run lint` de passer
+- Exclusion du code généré par Prisma (`generated/`) du lint backend, qui était analysé par erreur
+
+### Documentation
+- Mise à jour de `docs/CI.md` et du workflow `.github/workflows/ci.yml` : le job frontend exécute désormais aussi les tests unitaires et la vérification TypeScript, plus seulement le lint
+
+---
+
 ## [1.4.0] — 2026-07-24
 
 ### Ajouté

@@ -43,7 +43,7 @@ jobs:
         run: npm audit --audit-level=critical || true
 
   frontend:
-    name: Frontend — lint
+    name: Frontend — lint, tests, typecheck
     runs-on: ubuntu-latest
 
     steps:
@@ -64,3 +64,11 @@ jobs:
       - name: Lint
         working-directory: app-bank
         run: npm run lint
+
+      - name: Tests unitaires
+        working-directory: app-bank
+        run: npm test
+
+      - name: Vérification TypeScript
+        working-directory: app-bank
+        run: npm run typecheck

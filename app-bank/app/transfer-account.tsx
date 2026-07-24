@@ -80,7 +80,7 @@ export default function TransferAccountScreen() {
 
                     <Text style={styles.label}>Vers</Text>
                     {autresComptes.length === 0 ? (
-                        <Text style={styles.empty}>Vous n'avez pas d'autre compte ouvert</Text>
+                        <Text style={styles.empty}>Vous n&apos;avez pas d&apos;autre compte ouvert</Text>
                     ) : (
                         autresComptes.map((account) => (
                             <TouchableOpacity

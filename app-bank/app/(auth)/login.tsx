@@ -115,7 +115,7 @@ export default function LoginScreen() {
           accessibilityRole="link"
           accessibilityLabel="Pas encore de compte ? S'inscrire"
         >
-          <Text style={styles.linkText}>Pas encore de compte ? S'inscrire</Text>
+          <Text style={styles.linkText}>Pas encore de compte ? S&apos;inscrire</Text>
         </TouchableOpacity>
       </View>
     </View>
