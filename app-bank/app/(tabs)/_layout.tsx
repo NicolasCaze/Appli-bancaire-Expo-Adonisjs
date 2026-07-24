@@ -5,6 +5,7 @@ import { Colors } from '@/constants/Colors';
 import { useAuth } from '@/contexts/AuthContext';
 import { View, Text, StyleSheet } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 function FinygoSplash() {
   return (
@@ -33,6 +34,7 @@ const splash = StyleSheet.create({
 
 export default function TabLayout() {
   const { loading } = useAuth();
+  const insets = useSafeAreaInsets();
 
   if (loading) {
     return <FinygoSplash />
@@ -57,9 +59,9 @@ export default function TabLayout() {
         shadowOffset: { width: 0, height: -2 },
         shadowOpacity: 0.1,
         shadowRadius: 8,
-        paddingBottom: 8,
+        paddingBottom: 8 + insets.bottom,
         paddingTop: 8,
-        height: 65,
+        height: 65 + insets.bottom,
       },
       tabBarItemStyle: {
         paddingVertical: 4,

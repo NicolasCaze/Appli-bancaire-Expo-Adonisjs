@@ -4,6 +4,7 @@ import { router } from 'expo-router'
 import BiometricAuth from '@/services/biometricAuth'
 import SecureStorage from '@/services/secureStorage'
 import { useAuth } from '@/contexts/AuthContext'
+import api from '@/services/api'
 
 export default function RegisterScreen() {
   const { login } = useAuth()
@@ -110,33 +111,21 @@ export default function RegisterScreen() {
       const [day, month, year] = formData.dateNaissance.split('/')
       const dateISO = `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`
 
-      const response = await fetch('http://192.168.1.64:3333/create_users', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          firstname: formData.firstname,
-          lastname: formData.lastname,
-          email: formData.email,
-          password: formData.password,
-          dateNaissance: dateISO,
-          lieuNaissance: formData.lieuNaissance,
-          adresse: formData.adresse
-        })
+      await api.post('/create_users', {
+        firstname: formData.firstname,
+        lastname: formData.lastname,
+        email: formData.email,
+        password: formData.password,
+        dateNaissance: dateISO,
+        lieuNaissance: formData.lieuNaissance,
+        adresse: formData.adresse
       })
-
-      if (!response.ok) {
-        const errorData = await response.json()
-        throw new Error(errorData.message || 'Erreur lors de la création du compte')
-      }
-
-      const data = await response.json()
 
       await login(formData.email, formData.password)
       await showBiometricPrompt()
     } catch (error: any) {
-      Alert.alert('Erreur', error.message || 'Impossible de créer le compte')
+      const message = error.response?.data?.message || error.message || 'Impossible de créer le compte'
+      Alert.alert('Erreur', message)
     } finally {
       setLoading(false)
     }
