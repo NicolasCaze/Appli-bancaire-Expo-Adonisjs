@@ -1,5 +1,6 @@
 import { prisma } from '../../lib/prisma.js'
 import hash from '@adonisjs/core/services/hash'
+import logger from '@adonisjs/core/services/logger'
 
 type Users = {
     firstname : string,
@@ -12,18 +13,14 @@ type Users = {
 }
 
 export class UsersService {
-    
-    // Fonction pour récupérer tous les utilisateurs
-    public async getAllUsersService() {
-        const users = await prisma.user.findMany()
-        const accounts = await prisma.account.findMany()
-        return { users, accounts };
-    }
 
     public async createUsersService(userData: Users){
         function generateIBAN(): string {
-
-            return 'FR' + Math.random().toString().slice(2, 12);
+            // IBAN français réaliste : FR + 2 chiffres de contrôle + 23 chiffres = 27 caractères,
+            // cohérent avec la longueur minimale (15) exigée par le formulaire d'ajout de bénéficiaire
+            const randomDigits = (length: number) =>
+                Array.from({ length }, () => Math.floor(Math.random() * 10)).join('')
+            return 'FR' + randomDigits(2) + randomDigits(23)
         }
 
         function generateRIB(): string {
@@ -50,7 +47,7 @@ export class UsersService {
                 const account = await tx.account.create({
                     data: {
                         type: 'BANCAIRE',
-                        solde: 0,
+                        solde: 100,
                         label: 'Compte Principal',
                         iban: generateIBAN(),
                         rib: generateRIB(),
@@ -58,14 +55,22 @@ export class UsersService {
                     }
                 });
 
+                const beneficiaire = await tx.beneficiaire.create({
+                    data: {
+                        nom: 'Jean Dupont',
+                        iban: 'FR7630001007123456789012345',
+                        userId: user.id
+                    }
+                });
+
                 return {
                     user,
-                    account
+                    account,
+                    beneficiaire
                 };
             });
 
-            console.log('Created user:', result.user);
-            console.log('Created account:', result.account);
+            logger.info({ userId: result.user.id, accountId: result.account.id }, 'Utilisateur et compte créés')
 
             return result;
         }

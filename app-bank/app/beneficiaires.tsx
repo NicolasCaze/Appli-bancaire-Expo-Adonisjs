@@ -15,17 +15,20 @@ export default function BeneficiairesScreen() {
     const [loading, setLoading] = useState(false)
 
     const handleCreate = async () => {
-        if (!nom.trim() || !iban.trim()) {
+        const ibanSansEspaces = iban.trim().replace(/\s+/g, '').toUpperCase()
+
+        if (!nom.trim() || !ibanSansEspaces) {
             Alert.alert('Erreur', 'Le nom et l\'IBAN sont obligatoires')
             return
         }
 
         setLoading(true)
         try {
-            await beneficiaireService.createBeneficiaire(nom.trim(), iban.trim())
+            await beneficiaireService.createBeneficiaire(nom.trim(), ibanSansEspaces)
             setNom('')
             setIban('')
             await loadBeneficiaires()
+            Alert.alert('Bénéficiaire ajouté', `${nom.trim()} a bien été ajouté à vos bénéficiaires.`)
         } catch (error: any) {
             Alert.alert('Erreur', error.message || "Impossible d'ajouter ce bénéficiaire")
         } finally {
@@ -106,7 +109,7 @@ export default function BeneficiairesScreen() {
                     <Text style={styles.label}>IBAN</Text>
                     <TextInput
                         style={styles.input}
-                        placeholder="FR76 XXXX XXXX XXXX XXXX XXXX XXX"
+                        placeholder="FR76XXXXXXXXXXXXXXXXXXXXXXX"
                         placeholderTextColor="rgba(255,255,255,0.5)"
                         value={iban}
                         onChangeText={setIban}

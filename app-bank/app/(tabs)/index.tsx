@@ -8,7 +8,8 @@ import NavBarHome from '@/components/home/NavBarHome';
 import Patrimoine from '@/components/home/Patrimoine';
 import { Colors } from '@/constants/Colors';
 import { LinearGradient } from 'expo-linear-gradient';
-import { ScrollView, StyleSheet, View, SafeAreaView } from 'react-native';
+import { ScrollView, StyleSheet, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { useAuth } from '@/contexts/AuthContext'
 import PagerView from 'react-native-pager-view'
 import AccountPage from '@/components/home/AccountPage';

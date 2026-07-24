@@ -12,12 +12,13 @@ Ce document recense chaque faille du OWASP Top 10 et la mesure correspondante mi
 
 **Mesures appliquées :**
 - Toutes les routes protégées passent par le middleware `auth_middleware` qui vérifie le JWT et injecte `ctx.user`.
-- Les services métier vérifient systématiquement que la ressource demandée appartient à l'utilisateur authentifié avant toute opération. Exemple dans `transaction_service.ts` :
+- Les services métier vérifient systématiquement que la ressource demandée appartient à l'utilisateur authentifié avant toute opération, pour le compte source **et** le compte destination d'un virement. Exemple dans `transaction_service.ts` :
   ```typescript
   if (compteSource.userId !== userId) throw new Error('Accès refusé') // 403
+  if (compteDestination.userId !== userId) throw new Error('Accès refusé') // 403
   ```
 - Les bénéficiaires sont filtrés par `userId` : un utilisateur ne peut voir, modifier ou supprimer que ses propres bénéficiaires.
-- Aucune route admin exposée en V1.
+- Aucune route admin exposée en V1 — une route `GET /users` héritée du développement initial (retournant tous les utilisateurs et comptes sans filtrage) a été identifiée en revue de code et supprimée, n'étant utilisée par aucun écran du frontend.
 
 ---
 
@@ -71,8 +72,8 @@ Ce document recense chaque faille du OWASP Top 10 et la mesure correspondante mi
   - `X-XSS-Protection: 1; mode=block`
   - `Referrer-Policy: strict-origin-when-cross-origin`
   - `Permissions-Policy: camera=(), microphone=(), geolocation=()`
-- **Exception handler** (`app/exceptions/handler.ts`) : en production, les erreurs 500 retournent uniquement `{ message: 'Une erreur interne est survenue' }` — aucune stack trace ni détail SQL n'est exposé.
-- CORS configuré pour n'autoriser que les origines du frontend.
+- **Exception handler** (`app/exceptions/handler.ts`) : en production, les erreurs 500 retournent uniquement `{ message: 'Une erreur interne est survenue' }` — aucune stack trace ni détail SQL n'est exposé. Les contrôleurs (`users`, `auth`, `me`) suivent la même règle : le détail de l'exception est loggé côté serveur (`logger.error`) mais jamais renvoyé dans la réponse JSON.
+- CORS restreint à une liste explicite d'origines (`config/cors.ts`) plutôt que de refléter n'importe quelle origine : l'app mobile native n'envoie pas d'en-tête `Origin` et n'est donc pas concernée ; seules les origines de développement (Expo web local) et celles ajoutées via la variable d'environnement `ALLOWED_ORIGINS` sont acceptées.
 
 ---
 

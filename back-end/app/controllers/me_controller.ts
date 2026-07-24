@@ -1,5 +1,6 @@
 import type { HttpContext } from '@adonisjs/core/http'
 import vine from '@vinejs/vine'
+import logger from '@adonisjs/core/services/logger'
 import { MeService } from '../service/me_service.js'
 
 const updateEmailValidator = vine.compile(
@@ -29,7 +30,8 @@ export default class MeController {
             const profile = await this.meService.getProfile(user!.userId)
             return response.status(200).json(profile)
         } catch (error: any) {
-            return response.status(500).json({ message: error.message })
+            logger.error({ err: error }, 'Erreur lors de la récupération du profil')
+            return response.status(500).json({ message: 'Erreur lors de la récupération du profil' })
         }
     }
 

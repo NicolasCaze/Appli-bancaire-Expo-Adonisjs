@@ -18,6 +18,9 @@ export default await Env.create(new URL('../', import.meta.url), {
   HOST: Env.schema.string({ format: 'host' }),
   LOG_LEVEL: Env.schema.enum(['fatal', 'error', 'warn', 'info', 'debug', 'trace', 'silent']),
   JWT_SECRET: Env.schema.string(),
+  // Liste d'origines autorisées en CORS, séparées par des virgules (ex. web Expo,
+  // outil d'admin). Optionnel : l'app mobile native n'envoie pas d'origine de navigateur.
+  ALLOWED_ORIGINS: Env.schema.string.optional(),
   /*
   |----------------------------------------------------------
   | Variables for configuring database connection

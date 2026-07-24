@@ -5,9 +5,9 @@
 | Champ | Valeur |
 |-------|--------|
 | Application | Finygo — application bancaire mobile |
-| Version testée | 1.3.0 |
-| Date | 2026-07-23 |
-| Environnement | Développement local (Expo Go / simulateur iOS) |
+| Version testée | 1.4.0 |
+| Date | 2026-07-24 |
+| Environnement | Développement local (Expo Go / simulateur iOS et Android) |
 
 ---
 
@@ -21,8 +21,8 @@
 | **Fonctionnalité** | Inscription d'un nouvel utilisateur |
 | **Prérequis** | Aucun compte existant avec cet email |
 | **Étapes** | 1. Ouvrir l'application 2. Appuyer sur "Créer un compte" 3. Remplir prénom, nom, email, mot de passe (8 car. min., majuscule, chiffre, caractère spécial), date de naissance, lieu de naissance, adresse 4. Valider |
-| **Résultat attendu** | Compte créé, redirection vers l'écran de connexion |
-| **Résultat obtenu** | Compte créé avec succès, redirection automatique vers l'écran de connexion conforme à l'attendu |
+| **Résultat attendu** | Compte créé, message de confirmation affiché, connexion automatique et accès à l'accueil (avec proposition d'activer Face ID / Touch ID) |
+| **Résultat obtenu** | Compte créé avec succès, message "Votre compte a bien été créé" affiché, connexion automatique et redirection vers l'accueil conforme à l'attendu |
 | **Statut** | ✅ OK |
 
 ---
@@ -134,7 +134,7 @@
 | **Prérequis** | Connecté |
 | **Étapes** | 1. Onglet Virements → icône personne → "Mes bénéficiaires" 2. Saisir nom et IBAN valides 3. Appuyer sur "Ajouter le bénéficiaire" |
 | **Résultat attendu** | Bénéficiaire ajouté, affiché dans la liste |
-| **Résultat obtenu** | Bénéficiaire ajouté avec succès et affiché immédiatement dans la liste des bénéficiaires |
+| **Résultat obtenu** | Bénéficiaire ajouté avec succès et affiché immédiatement dans la liste des bénéficiaires. Retest le 2026-07-24 après correction de deux bogues bloquants : un IBAN saisi avec espaces était rejeté par erreur (placeholder trompeur), et l'IBAN généré automatiquement à l'inscription était trop court (~12 caractères) pour passer la validation du formulaire (minimum 15). Les deux corrections ont été vérifiées de bout en bout (inscription → IBAN de 27 caractères → ajout réussi en bénéficiaire) |
 | **Statut** | ✅ OK |
 
 ---

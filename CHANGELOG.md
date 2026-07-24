@@ -5,6 +5,32 @@ Format : [Keep a Changelog](https://keepachangelog.com/fr/1.0.0/) — Versioning
 
 ---
 
+## [1.4.0] — 2026-07-24
+
+### Ajouté
+- Solde de départ de 100 € et bénéficiaire de démonstration créés automatiquement à l'inscription, pour permettre de tester virements et bénéficiaires immédiatement après création d'un compte
+- Sélecteur de date natif (iOS / Android) pour la date de naissance (inscription) et les dates des virements programmés, en remplacement des champs texte libres
+- Messages de confirmation après l'inscription et après la création d'un virement programmé
+
+### Corrigé
+- Bouton d'onglets masqué derrière la barre de navigation système sur Android (prise en compte des zones sécurisées)
+- Boutons de l'en-tête de l'écran d'accueil coupés/débordants sur Android (mauvaise source d'import de `SafeAreaView`)
+- Ajout d'un bénéficiaire systématiquement rejeté ("Données invalides") : IBAN saisi avec espaces non nettoyé avant validation, et IBAN généré à l'inscription trop court (~12 caractères) pour la validation du formulaire (minimum 15)
+- Texte du sélecteur de date illisible (noir sur fond sombre) sur l'écran des virements programmés
+
+### Sécurité
+- Suppression de la route `GET /users`, qui exposait sans filtrage l'ensemble des utilisateurs (dont le mot de passe haché) et des comptes (IBAN, RIB, solde) de tous les utilisateurs à tout compte authentifié ; route non utilisée par le frontend
+- Retrait du mot de passe haché des logs serveur à la création d'un compte
+- Virement entre comptes propres : vérification que le compte destination appartient bien à l'utilisateur (l'API ne vérifiait que le compte source)
+- CORS restreint à une liste d'origines explicites (`ALLOWED_ORIGINS`) au lieu de refléter n'importe quelle origine
+- Les erreurs serveur inattendues (500) ne renvoient plus le détail interne de l'exception au client (`users`, `auth`, `me`)
+- Retrait d'une adresse IP personnelle oubliée dans `app-bank/.env.example`
+
+### Documentation
+- Mise à jour de `docs/CAHIER_RECETTES.md` et `docs/SECURITE.md`
+
+---
+
 ## [1.3.0] — 2026-07-22
 
 ### Ajouté

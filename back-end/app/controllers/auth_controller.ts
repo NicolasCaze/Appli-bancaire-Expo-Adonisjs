@@ -1,4 +1,5 @@
 import type { HttpContext } from '@adonisjs/core/http'
+import logger from '@adonisjs/core/services/logger'
 import { AuthService } from '../service/auth_service.js'
 import { loginValidator, refreshValidator, logoutValidator } from '../validators/auth_validator.js'
 
@@ -74,9 +75,9 @@ export default class AuthController {
           errors: error.messages
         })
       }
+      logger.error({ err: error }, 'Erreur lors de la déconnexion')
       return response.status(500).json({
-        message: 'Erreur lors de la déconnexion',
-        error: error.message
+        message: 'Erreur lors de la déconnexion'
       })
     }
   }

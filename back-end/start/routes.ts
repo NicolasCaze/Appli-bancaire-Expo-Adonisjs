@@ -34,7 +34,6 @@ import BeneficiairesController from '#controllers/beneficiaires_controller'
 import VirementsProgrammesController from '#controllers/virements_programmes_controller'
 import MeController from '#controllers/me_controller'
 
-router.get('/users', [UsersController, 'index']).use(middleware.auth())
 router.get('/accounts', [AccountsController, 'getMyAccount']).use(middleware.auth())
 router.post('/accounts/create', [AccountsController, 'createTypeAccount']).use(middleware.auth())
 router.get('/payments', [PaymentsController, 'getMyPayments']).use(middleware.auth())

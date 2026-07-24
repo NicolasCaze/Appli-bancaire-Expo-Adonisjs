@@ -20,8 +20,8 @@ Gestion multi-comptes (Bancaire, Épargne, Pocket), virements internes et extern
 cd back-end
 docker compose up -d              # démarre une base PostgreSQL locale
 cp .env.example .env
-node ace generate:key --force     # génère APP_KEY dans .env
 npm install
+node ace generate:key --force     # génère APP_KEY dans .env
 npx prisma migrate deploy         # crée les tables
 npx prisma generate
 npm run dev
@@ -49,11 +49,11 @@ Puis scanner le QR code avec l'application **Expo Go**, ou appuyer sur `i` (simu
 
 La valeur de `EXPO_PUBLIC_API_URL` dépend de **comment vous lancez l'application**. Il n'y a qu'une seule bonne réponse selon votre cas :
 
-| Vous testez avec... | Valeur à mettre dans `app-bank/.env` |
-|---|---|
-| **Simulateur iOS** (Mac uniquement) | `http://localhost:3333` |
+| Vous testez avec...                    | Valeur à mettre dans `app-bank/.env`                                                                                      |
+| -------------------------------------- | ------------------------------------------------------------------------------------------------------------------------- |
+| **Simulateur iOS** (Mac uniquement)    | `http://localhost:3333`                                                                                                   |
 | **Émulateur Android** (Android Studio) | `http://10.0.2.2:3333` — **pas** `localhost` (depuis l'émulateur, `localhost` désigne l'émulateur lui-même, pas votre PC) |
-| **Téléphone physique via Expo Go** | `http://<votre adresse IPv4 locale>:3333` (voir ci-dessous comment la trouver) |
+| **Téléphone physique via Expo Go**     | `http://<votre adresse IPv4 locale>:3333` (voir ci-dessous comment la trouver)                                            |
 
 **Trouver son adresse IPv4 locale** (uniquement nécessaire pour un téléphone physique) :
 

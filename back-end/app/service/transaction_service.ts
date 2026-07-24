@@ -46,6 +46,9 @@ export class transactionsService {
             if (!compteDestination) {
                 throw new Error('Compte destination introuvable')
             }
+            if (compteDestination.userId !== userId) {
+                throw new Error("Vous n'êtes pas autorisé à créditer ce compte destination")
+            }
 
             // Débit atomique : la condition solde >= montant est vérifiée par la base
             // au moment de l'update, ce qui évite la race condition d'un lire-puis-écrire

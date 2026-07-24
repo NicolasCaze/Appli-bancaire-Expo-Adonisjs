@@ -1,10 +1,19 @@
 import { useState } from 'react'
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, ScrollView, KeyboardAvoidingView, Platform } from 'react-native'
 import { router } from 'expo-router'
+import DateTimePicker, { DateTimePickerEvent } from '@react-native-community/datetimepicker'
 import BiometricAuth from '@/services/biometricAuth'
 import SecureStorage from '@/services/secureStorage'
 import { useAuth } from '@/contexts/AuthContext'
 import api from '@/services/api'
+
+const formatDateFr = (date: Date) =>
+  date.toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit', year: 'numeric' })
+
+const formatDateISO = (date: Date) => {
+  const pad = (n: number) => String(n).padStart(2, '0')
+  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`
+}
 
 export default function RegisterScreen() {
   const { login } = useAuth()
@@ -14,10 +23,11 @@ export default function RegisterScreen() {
     email: '',
     password: '',
     confirmPassword: '',
-    dateNaissance: '',
     lieuNaissance: '',
     adresse: ''
   })
+  const [dateNaissance, setDateNaissance] = useState<Date | null>(null)
+  const [showDatePicker, setShowDatePicker] = useState(false)
   const [loading, setLoading] = useState(false)
 
   /**
@@ -33,6 +43,11 @@ export default function RegisterScreen() {
   const validateForm = (): boolean => {
     if (!Object.values(formData).every(element => element.trim() !=='')) {
       Alert.alert('Erreur', 'Tous les champs sont obligatoires')
+      return false
+    }
+
+    if (!dateNaissance) {
+      Alert.alert('Erreur', 'Veuillez sélectionner votre date de naissance')
       return false
     }
 
@@ -107,22 +122,22 @@ export default function RegisterScreen() {
     setLoading(true)
 
     try {
-      // Convertir la date au format ISO (YYYY-MM-DD)
-      const [day, month, year] = formData.dateNaissance.split('/')
-      const dateISO = `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`
-
       await api.post('/create_users', {
         firstname: formData.firstname,
         lastname: formData.lastname,
         email: formData.email,
         password: formData.password,
-        dateNaissance: dateISO,
+        dateNaissance: formatDateISO(dateNaissance!),
         lieuNaissance: formData.lieuNaissance,
         adresse: formData.adresse
       })
 
       await login(formData.email, formData.password)
-      await showBiometricPrompt()
+      Alert.alert(
+        'Compte créé',
+        'Votre compte a bien été créé.',
+        [{ text: 'OK', onPress: () => showBiometricPrompt() }]
+      )
     } catch (error: any) {
       const message = error.response?.data?.message || error.message || 'Impossible de créer le compte'
       Alert.alert('Erreur', message)
@@ -188,13 +203,42 @@ export default function RegisterScreen() {
           accessibilityLabel="Confirmer le mot de passe"
         />
 
-        <TextInput
+        <TouchableOpacity
           style={styles.input}
-          placeholder="Date de naissance (JJ/MM/AAAA)"
-          value={formData.dateNaissance}
-          onChangeText={(value) => updateField('dateNaissance', value)}
-          accessibilityLabel="Date de naissance, format jour mois année"
-        />
+          onPress={() => setShowDatePicker(true)}
+          accessibilityRole="button"
+          accessibilityLabel="Date de naissance"
+          accessibilityHint={dateNaissance ? `Date sélectionnée : ${formatDateFr(dateNaissance)}. Appuyer pour modifier` : 'Appuyer pour choisir votre date de naissance'}
+        >
+          <Text style={dateNaissance ? styles.dateText : styles.datePlaceholder}>
+            {dateNaissance ? formatDateFr(dateNaissance) : 'Date de naissance'}
+          </Text>
+        </TouchableOpacity>
+
+        {showDatePicker && (
+          <>
+            <DateTimePicker
+              value={dateNaissance ?? new Date(2000, 0, 1)}
+              mode="date"
+              display={Platform.OS === 'ios' ? 'spinner' : 'default'}
+              maximumDate={new Date()}
+              onChange={(_event: DateTimePickerEvent, selectedDate?: Date) => {
+                setShowDatePicker(Platform.OS === 'ios')
+                if (selectedDate) setDateNaissance(selectedDate)
+              }}
+            />
+            {Platform.OS === 'ios' && (
+              <TouchableOpacity
+                style={styles.dateDoneButton}
+                onPress={() => setShowDatePicker(false)}
+                accessibilityRole="button"
+                accessibilityLabel="Valider la date"
+              >
+                <Text style={styles.dateDoneText}>Valider</Text>
+              </TouchableOpacity>
+            )}
+          </>
+        )}
 
         <TextInput
           style={styles.input}
@@ -262,6 +306,27 @@ const styles = StyleSheet.create({
     padding: 15,
     marginBottom: 15,
     fontSize: 16
+  },
+  dateText: {
+    fontSize: 16,
+    color: '#000'
+  },
+  datePlaceholder: {
+    fontSize: 16,
+    color: '#999'
+  },
+  dateDoneButton: {
+    backgroundColor: '#007AFF',
+    padding: 12,
+    borderRadius: 8,
+    marginTop: -5,
+    marginBottom: 15,
+    alignItems: 'center'
+  },
+  dateDoneText: {
+    color: '#fff',
+    fontWeight: '600',
+    fontSize: 15
   },
   button: {
     backgroundColor: '#007AFF',

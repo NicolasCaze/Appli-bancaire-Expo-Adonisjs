@@ -3,6 +3,7 @@ import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, FlatList, K
 import { router } from 'expo-router'
 import { LinearGradient } from 'expo-linear-gradient'
 import { SafeAreaView } from 'react-native-safe-area-context'
+import DateTimePicker, { DateTimePickerEvent } from '@react-native-community/datetimepicker'
 import { Colors } from '@/constants/Colors'
 import { useAuth } from '@/contexts/AuthContext'
 import virementProgrammeService from '@/services/virementProgrammeService'
@@ -14,6 +15,14 @@ const getAccountLabel = (type?: string) => {
     if (type === 'EPARGNE') return 'Compte Épargne'
     if (type === 'POCKET') return 'Pocket'
     return 'Compte'
+}
+
+const formatDateFr = (date: Date) =>
+    date.toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit', year: 'numeric' })
+
+const formatDateISO = (date: Date) => {
+    const pad = (n: number) => String(n).padStart(2, '0')
+    return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`
 }
 
 const frequenceLabel: Record<Frequence, string> = {
@@ -34,8 +43,10 @@ export default function VirementsProgrammesScreen() {
     const [montant, setMontant] = useState('')
     const [libelle, setLibelle] = useState('')
     const [frequence, setFrequence] = useState<Frequence>('UNIQUE')
-    const [dateProchaineExecution, setDateProchaineExecution] = useState('')
-    const [dateFin, setDateFin] = useState('')
+    const [dateProchaineExecution, setDateProchaineExecution] = useState<Date | null>(null)
+    const [dateFin, setDateFin] = useState<Date | null>(null)
+    const [showDateProchainePicker, setShowDateProchainePicker] = useState(false)
+    const [showDateFinPicker, setShowDateFinPicker] = useState(false)
     const [creating, setCreating] = useState(false)
 
     const loadVirements = async () => {
@@ -69,12 +80,8 @@ export default function VirementsProgrammesScreen() {
             Alert.alert('Erreur', 'Le montant doit être positif')
             return
         }
-        if (!/^\d{4}-\d{2}-\d{2}$/.test(dateProchaineExecution)) {
-            Alert.alert('Erreur', 'La date doit être au format AAAA-MM-JJ')
-            return
-        }
-        if (dateFin && !/^\d{4}-\d{2}-\d{2}$/.test(dateFin)) {
-            Alert.alert('Erreur', 'La date de fin doit être au format AAAA-MM-JJ')
+        if (!dateProchaineExecution) {
+            Alert.alert('Erreur', 'Veuillez sélectionner une date de prochaine exécution')
             return
         }
 
@@ -86,14 +93,15 @@ export default function VirementsProgrammesScreen() {
                 montantNumber,
                 libelle.trim() || 'Virement programmé',
                 frequence,
-                dateProchaineExecution,
-                dateFin || null
+                formatDateISO(dateProchaineExecution),
+                dateFin ? formatDateISO(dateFin) : null
             )
             setMontant('')
             setLibelle('')
-            setDateProchaineExecution('')
-            setDateFin('')
+            setDateProchaineExecution(null)
+            setDateFin(null)
             await loadVirements()
+            Alert.alert('Virement programmé', 'Votre virement programmé a bien été enregistré.')
         } catch (error: any) {
             Alert.alert('Erreur', error.message || 'Impossible de créer ce virement programmé')
         } finally {
@@ -253,29 +261,75 @@ export default function VirementsProgrammesScreen() {
                                 accessibilityHint="Description optionnelle du virement"
                             />
 
-                            <Text style={styles.label}>Date de la prochaine exécution (AAAA-MM-JJ)</Text>
-                            <TextInput
+                            <Text style={styles.label}>Date de la prochaine exécution</Text>
+                            <TouchableOpacity
                                 style={styles.input}
-                                placeholder="2026-07-01"
-                                placeholderTextColor="rgba(255,255,255,0.5)"
-                                value={dateProchaineExecution}
-                                onChangeText={setDateProchaineExecution}
+                                onPress={() => setShowDateProchainePicker(true)}
+                                accessibilityRole="button"
                                 accessibilityLabel="Date de la prochaine exécution"
-                                accessibilityHint="Format AAAA-MM-JJ, par exemple 2026-07-01"
-                            />
+                                accessibilityHint={dateProchaineExecution ? `Date sélectionnée : ${formatDateFr(dateProchaineExecution)}. Appuyer pour modifier` : 'Appuyer pour choisir une date'}
+                            >
+                                <Text style={dateProchaineExecution ? styles.dateText : styles.datePlaceholder}>
+                                    {dateProchaineExecution ? formatDateFr(dateProchaineExecution) : 'Choisir une date'}
+                                </Text>
+                            </TouchableOpacity>
+
+                            {showDateProchainePicker && (
+                                <>
+                                    <DateTimePicker
+                                        value={dateProchaineExecution ?? new Date()}
+                                        mode="date"
+                                        display={Platform.OS === 'ios' ? 'spinner' : 'default'}
+                                        themeVariant="dark"
+                                        minimumDate={new Date()}
+                                        onChange={(_event: DateTimePickerEvent, selectedDate?: Date) => {
+                                            setShowDateProchainePicker(Platform.OS === 'ios')
+                                            if (selectedDate) setDateProchaineExecution(selectedDate)
+                                        }}
+                                    />
+                                    {Platform.OS === 'ios' && (
+                                        <TouchableOpacity style={styles.dateDoneButton} onPress={() => setShowDateProchainePicker(false)}>
+                                            <Text style={styles.dateDoneText}>Valider</Text>
+                                        </TouchableOpacity>
+                                    )}
+                                </>
+                            )}
 
                             {frequence !== 'UNIQUE' && (
                                 <>
-                                    <Text style={styles.label}>Date de fin (optionnel, AAAA-MM-JJ)</Text>
-                                    <TextInput
+                                    <Text style={styles.label}>Date de fin (optionnel)</Text>
+                                    <TouchableOpacity
                                         style={styles.input}
-                                        placeholder="2027-01-01"
-                                        placeholderTextColor="rgba(255,255,255,0.5)"
-                                        value={dateFin}
-                                        onChangeText={setDateFin}
+                                        onPress={() => setShowDateFinPicker(true)}
+                                        accessibilityRole="button"
                                         accessibilityLabel="Date de fin du virement programmé"
-                                        accessibilityHint="Optionnel, format AAAA-MM-JJ"
-                                    />
+                                        accessibilityHint={dateFin ? `Date sélectionnée : ${formatDateFr(dateFin)}. Appuyer pour modifier` : 'Optionnel. Appuyer pour choisir une date'}
+                                    >
+                                        <Text style={dateFin ? styles.dateText : styles.datePlaceholder}>
+                                            {dateFin ? formatDateFr(dateFin) : 'Aucune (optionnel)'}
+                                        </Text>
+                                    </TouchableOpacity>
+
+                                    {showDateFinPicker && (
+                                        <>
+                                            <DateTimePicker
+                                                value={dateFin ?? dateProchaineExecution ?? new Date()}
+                                                mode="date"
+                                                display={Platform.OS === 'ios' ? 'spinner' : 'default'}
+                                        themeVariant="dark"
+                                                minimumDate={dateProchaineExecution ?? new Date()}
+                                                onChange={(_event: DateTimePickerEvent, selectedDate?: Date) => {
+                                                    setShowDateFinPicker(Platform.OS === 'ios')
+                                                    if (selectedDate) setDateFin(selectedDate)
+                                                }}
+                                            />
+                                            {Platform.OS === 'ios' && (
+                                                <TouchableOpacity style={styles.dateDoneButton} onPress={() => setShowDateFinPicker(false)}>
+                                                    <Text style={styles.dateDoneText}>Valider</Text>
+                                                </TouchableOpacity>
+                                            )}
+                                        </>
+                                    )}
                                 </>
                             )}
 
@@ -386,6 +440,26 @@ const styles = StyleSheet.create({
         padding: 14,
         color: '#fff',
         fontSize: 16
+    },
+    dateText: {
+        color: '#fff',
+        fontSize: 16
+    },
+    datePlaceholder: {
+        color: 'rgba(255,255,255,0.5)',
+        fontSize: 16
+    },
+    dateDoneButton: {
+        backgroundColor: '#fff',
+        borderRadius: 10,
+        padding: 12,
+        marginTop: 6,
+        alignItems: 'center'
+    },
+    dateDoneText: {
+        color: Colors.primary,
+        fontWeight: '700',
+        fontSize: 15
     },
     button: {
         backgroundColor: '#fff',

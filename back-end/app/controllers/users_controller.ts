@@ -1,4 +1,5 @@
 import type { HttpContext } from '@adonisjs/core/http'
+import logger from '@adonisjs/core/services/logger'
 import { UsersService } from '../service/users_service.js'
 import { createUserValidator } from '../validators/auth_validator.js'
 
@@ -7,18 +8,6 @@ export default class UsersController {
 
     constructor() {
         this.usersService = new UsersService()
-    }
-    
-    public async index({response}: HttpContext){
-        try {
-            const data = await this.usersService.getAllUsersService()
-            return response.status(200).json(data)
-        } catch (error) {
-            return response.status(500).json({
-                message: 'Erreur lors de la récupération des utilisateurs',
-                error: error.message
-            })
-        }
     }
 
     public async createUsers({request, response}: HttpContext){
@@ -36,14 +25,11 @@ export default class UsersController {
                     message: 'Données invalides',
                     errors: error.messages
                 })
-            } 
-            console.error('Erreur lors de la création:', error)
+            }
+            logger.error({ err: error }, 'Erreur lors de la création de l\'utilisateur')
             return response.status(500).json({
-                message: 'Erreur lors de la création de l\'utilisateur',
-                error: error.message
+                message: 'Erreur lors de la création de l\'utilisateur'
             })
         }
     }
-
-    
 }

@@ -25,6 +25,16 @@ class BeneficiaireService {
         await sessionManager.handleSessionExpired()
         throw new Error('Votre session a expiré')
       }
+      const validationErrors = error.response?.data?.errors
+      if (Array.isArray(validationErrors) && validationErrors.length > 0) {
+        const field = validationErrors[0].field
+        if (field === 'iban') {
+          throw new Error("Format d'IBAN invalide. Vérifiez qu'il ne contient pas d'espaces ni de caractères incorrects.")
+        }
+        if (field === 'nom') {
+          throw new Error('Le nom du bénéficiaire doit contenir entre 2 et 100 caractères.')
+        }
+      }
       throw new Error(error.response?.data?.message ?? "Erreur lors de la création du bénéficiaire")
     }
   }
