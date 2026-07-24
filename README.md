@@ -45,7 +45,48 @@ npx expo start
 
 Puis scanner le QR code avec l'application **Expo Go**, ou appuyer sur `i` (simulateur iOS) / `a` (émulateur Android).
 
-> **URL de l'API** (`app-bank/.env`) : `http://localhost:3333` fonctionne directement avec un simulateur sur la même machine. Avec Expo Go sur un téléphone physique, remplacer par l'adresse IP locale de la machine qui fait tourner le backend (le téléphone doit être sur le même réseau Wi-Fi).
+#### ⚠️ Configurer l'URL de l'API (`app-bank/.env`) — étape la plus fréquemment source de blocage
+
+La valeur de `EXPO_PUBLIC_API_URL` dépend de **comment vous lancez l'application**. Il n'y a qu'une seule bonne réponse selon votre cas :
+
+| Vous testez avec... | Valeur à mettre dans `app-bank/.env` |
+|---|---|
+| **Simulateur iOS** (Mac uniquement) | `http://localhost:3333` |
+| **Émulateur Android** (Android Studio) | `http://10.0.2.2:3333` — **pas** `localhost` (depuis l'émulateur, `localhost` désigne l'émulateur lui-même, pas votre PC) |
+| **Téléphone physique via Expo Go** | `http://<votre adresse IPv4 locale>:3333` (voir ci-dessous comment la trouver) |
+
+**Trouver son adresse IPv4 locale** (uniquement nécessaire pour un téléphone physique) :
+
+```bash
+# Windows
+ipconfig
+# → chercher "Adresse IPv4" sous l'adaptateur Wi-Fi actif
+
+# macOS
+ipconfig getifaddr en0
+
+# Linux
+hostname -I
+```
+
+**Si vous testez sur un téléphone physique, deux conditions supplémentaires sont indispensables :**
+
+1. Le téléphone doit être connecté au **même réseau Wi-Fi** que l'ordinateur qui fait tourner le backend (pas de 4G/5G, pas de VPN actif sur l'un des deux appareils).
+2. Dans `back-end/.env`, la variable `HOST` doit valoir `HOST=0.0.0.0` (déjà la valeur par défaut de `.env.example`) — avec `HOST=localhost`, le serveur refuse toute connexion venant d'un autre appareil que lui-même, même si l'IP et le réseau sont corrects.
+
+**Après toute modification de `.env` (frontend ou backend), il faut redémarrer le serveur concerné** — un changement de `.env` n'est jamais pris en compte à chaud :
+
+```bash
+# Backend : Ctrl+C puis relancer
+npm run dev
+
+# Frontend : Ctrl+C puis relancer avec le cache vidé
+npx expo start -c
+```
+
+Le `-c` est important côté frontend : les variables `EXPO_PUBLIC_*` sont injectées dans le bundle JavaScript par Metro au démarrage — sans vider le cache, un redémarrage peut réutiliser un ancien bundle avec l'ancienne valeur.
+
+**Pour vérifier que la connexion fonctionne**, ouvrir `http://<IP ou 10.0.2.2>:3333/health` directement dans le navigateur du téléphone/émulateur : la réponse `{"status":"ok","database":"connected"}` confirme que le réseau est correctement configuré, indépendamment de l'application.
 
 ---
 
