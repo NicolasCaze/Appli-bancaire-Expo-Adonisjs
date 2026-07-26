@@ -4,6 +4,9 @@ build
 tmp
 coverage
 
+# Logs PM2
+logs/
+
 # Secrets
 .env
 .env.local

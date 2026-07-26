@@ -119,7 +119,8 @@ Ce document recense chaque faille du OWASP Top 10 et la mesure correspondante mi
 **Risque** : Absence de traces permettant de détecter ou d'analyser une attaque.
 
 **Mesures appliquées :**
-- **Logger AdonisJS** activé en production : toutes les requêtes HTTP (méthode, route, statut, durée) sont enregistrées.
+- **`http_logger_middleware`** (middleware serveur global, appliqué à toutes les requêtes sans exception) : chaque requête est journalisée avec méthode, route, statut et durée en ms — niveau `info` (< 400), `warn` (4xx), `error` (5xx).
+- En production, ces logs sont persistés par PM2 (`ecosystem.config.cjs`) dans `logs/out.log` et `logs/error.log`.
 - Les tentatives de connexion échouées générant un 429 sont tracées par le middleware de rate limiting.
 - Les accès refusés (403) et non trouvés (404) retournent des codes HTTP standards permettant une détection d'anomalies.
 
